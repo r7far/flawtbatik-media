@@ -270,7 +270,7 @@ async function aWeeks(){
 }
 async function aSettings(){
   const s = await api('/api/admin/settings');
-  $('#ab').innerHTML = '<div class="card"><h3>Sheet bridge</h3><label>Bridge URL (Apps Script web app)</label><input id="bu" value="' + esc(s.bridge_url) + '"><label>Bridge token</label><input id="bt" type="password" placeholder="' + (s.bridge_token ? 'saved (type to change)' : 'not set') + '">' +
+  $('#ab').innerHTML = '<div class="card"><h3>Sheet bridge</h3><label>Bridge URL (Apps Script web app)</label><input id="bu" value="' + esc(s.bridge_url) + '"><label>Bridge token</label><input id="bt" type="password" placeholder="' + (s.bridge_token ? 'saved (type to change)' : 'not set') + '"><div class="row"><button class="btn ghost" id="gt">🔑 Make a new token</button></div><div id="tokbox"></div>' +
     '<h3 style="margin-top:16px">Site</h3><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="mm" style="width:auto"' + (s.maintenance === '1' ? ' checked' : '') + '> Maintenance mode (only admins can enter)</label>' +
     '<label>Phone alerts channel (ntfy, optional)</label><input id="nt" value="' + esc(s.ntfy) + '"><div class="row"><button class="btn" id="ok">Save</button></div></div>';
   $('#gt').onclick = async () => { if (!confirm('Make a new token? The old one stops working.')) return; const r = await api('/api/admin/token', {});
