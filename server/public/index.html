@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Fla w Tbatik – Media Team</title>
+<link rel="icon" href="/logo.jpeg">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Lalezar&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F6F2E6;--surface:#fff;--ink:#0B0B0B;--muted:#5A656B;--line:#D5CFBD;--slate:#7F99A8;--deep:#4F6877;--cream:#E6DCC0;--red:#C8463D;--amber:#B7791F;--green:#2F7D4F}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;font-size:16px;line-height:1.5}
+.wrap{max-width:1000px;margin:0 auto;padding:0 16px}
+header{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:2px solid var(--ink)}
+.bar{display:flex;align-items:center;gap:10px;height:62px}
+.bar img{height:42px;border-radius:10px;border:2px solid var(--ink);background:#fff}
+nav{margin-inline-start:auto;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav a{text-decoration:none;color:var(--ink);font-weight:600;font-size:14px;padding:7px 11px;border-radius:999px;white-space:nowrap;cursor:pointer}
+nav a.on{background:var(--ink);color:var(--bg)}
+main{padding:22px 16px 60px}
+h1,h2,h3{font-family:Lalezar,sans-serif;font-weight:400;margin:0;line-height:1.1}
+h2{font-size:30px}h3{font-size:22px}
+.lead{color:var(--muted);margin:4px 0 18px}
+.card{background:var(--surface);border:2px solid var(--ink);border-radius:18px;box-shadow:4px 4px 0 var(--ink);padding:18px;margin-bottom:18px;overflow-x:auto}
+.btn{display:inline-flex;align-items:center;gap:6px;font:inherit;font-weight:700;font-size:14px;padding:9px 15px;border-radius:999px;border:2px solid var(--ink);background:var(--slate);color:var(--ink);cursor:pointer;box-shadow:2px 2px 0 var(--ink)}
+.btn.ghost{background:#fff}.btn.ok{background:#CDEBD8}.btn.no{background:#FBE1DE}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+input,select,textarea{font:inherit;width:100%;padding:9px 11px;border:2px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink)}
+textarea{min-height:80px}
+label{display:block;font-weight:700;margin:10px 0 6px;font-size:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.muted{color:var(--muted)}.small{font-size:13px}
+.ar{direction:rtl;unicode-bidi:isolate;color:var(--muted);font-size:14px}
+.task{border:2px solid var(--ink);border-radius:14px;padding:14px;background:var(--bg);margin-bottom:12px}
+.task .top{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+.task b.t{font-size:17px}
+.pill{font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;border:2px solid var(--ink);background:#fff;white-space:nowrap}
+.pill.soon{background:#FFF1CF;color:var(--amber);border-color:var(--amber)}
+.pill.late{background:#FBE1DE;color:var(--red);border-color:var(--red)}
+.pill.done{background:#E3F3E9;color:var(--green);border-color:var(--green)}
+.pill.sub{background:#E4EEF4;color:var(--deep);border-color:var(--deep)}
+.pill.chg{background:#FBE1DE;color:var(--red);border-color:var(--red)}
+.meta{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--muted);margin-top:6px}
+.subs{margin-top:10px;border-top:1px dashed var(--line);padding-top:8px;font-size:14px}
+.sub{padding:8px 10px;border-radius:10px;background:#fff;border:1px solid var(--line);margin-top:6px}
+.week{font-family:Lalezar;font-size:24px;margin:18px 0 8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-size:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.tabs button{font:inherit;font-weight:700;padding:7px 13px;border-radius:999px;border:2px solid var(--ink);background:#fff;cursor:pointer}
+.tabs button.on{background:var(--ink);color:#fff}
+.center{max-width:420px;margin:40px auto}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:999px;font-weight:700;opacity:0;transition:opacity .2s;pointer-events:none;z-index:30}
+.toast.on{opacity:1}
+.stat{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.stat div{border:2px solid var(--ink);border-radius:14px;padding:12px;background:#fff}
+.stat b{font-family:Lalezar;font-size:30px;display:block;font-weight:400}
+.bar2{height:10px;border:2px solid var(--ink);border-radius:999px;overflow:hidden;background:#fff;margin-top:6px}
+.bar2 i{display:block;height:100%;background:var(--green)}
+dialog{border:2px solid var(--ink);border-radius:18px;padding:18px;max-width:520px;width:calc(100% - 32px)}
+dialog::backdrop{background:rgba(0,0,0,.35)}
+@media(max-width:700px){.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="wrap bar"><img src="/logo.jpeg" alt=""><nav id="nav"></nav></div></header>
+<main class="wrap" id="app"></main>
+<dialog id="dlg"></dialog>
+<div class="toast" id="toast"></div>
+<script>
+const $ = s => document.querySelector(s), app = $('#app');
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const toast = m => { const t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 2200); };
+async function api(path, body){
+  const r = await fetch(path, body === undefined ? {} : {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error || ('Error ' + r.status));
+  return j;
+}
+const TOOLS = 'https://r7far.github.io/flawtbatik-media/';
+let ME = null, VIEW = 'tasks', AT = 'users';
+const today = () => new Date(new Date().toLocaleDateString('en-CA', {timeZone:'Asia/Riyadh'}) + 'T00:00:00Z');
+const left = d => d ? Math.round((new Date(d + 'T00:00:00Z') - today()) / 864e5) : null;
+const fmt = d => d ? new Date(d + 'T00:00:00Z').toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short', timeZone:'UTC'}) : '';
+function statusPill(t){
+  const s = t.status;
+  if (s === 'Done') return '<span class="pill done">✅ Done</span>';
+  if (s === 'Submitted') return '<span class="pill sub">📤 Submitted</span>';
+  if (s === 'Changes requested') return '<span class="pill chg">✏️ Changes</span>';
+  const l = left(t.due);
+  if (l === null) return '<span class="pill">' + esc(s) + '</span>';
+  if (l < 0) return '<span class="pill late">' + (-l) + 'd late</span>';
+  if (l === 0) return '<span class="pill late">Today</span>';
+  return '<span class="pill' + (l <= 2 ? ' soon' : '') + '">' + l + (l === 1 ? ' day' : ' days') + ' left</span>';
+}
+
+async function boot(){
+  const me = await api('/api/me');
+  ME = me.user;
+  if (me.setup) return setupView();
+  if (!ME) return loginView();
+  if (me.maintenance && ME.role !== 'admin') { app.innerHTML = '<div class="card center"><h3>🛠️ Maintenance</h3><p>The site is closed for a short time.</p></div>'; return; }
+  drawNav(); show(VIEW);
+}
+function drawNav(){
+  const items = [['tasks', ME.role === 'member' ? 'My tasks' : 'Tasks']];
+  if (['admin','head'].includes(ME.role)) items.push(['review','Review'], ['team','Team']);
+  if (ME.role === 'admin') items.push(['admin','Admin']);
+  items.push(['tools','Tools'], ['me', '👤 ' + ME.name.split(' ')[0]]);
+  $('#nav').innerHTML = items.map(([k, l]) => '<a data-v="' + k + '" class="' + (k === VIEW ? 'on' : '') + '">' + esc(l) + '</a>').join('');
+  $('#nav').onclick = e => { const a = e.target.closest('a'); if (!a) return; if (a.dataset.v === 'tools') return window.open(TOOLS, '_blank'); VIEW = a.dataset.v; drawNav(); show(VIEW); };
+}
+function show(v){ ({tasks:tasksView, review:reviewView, team:teamView, admin:adminView, me:meView})[v](); window.scrollTo(0,0); }
+
+function setupView(){
+  app.innerHTML = '<div class="card center"><h2>First setup</h2><p class="muted">Create the admin account (only works from the home network, once).</p>' +
+    '<label>Your name</label><input id="n" value="Rashad"><label>Username</label><input id="u" value="rashad" autocapitalize="off">' +
+    '<label>Password (8+ characters)</label><input id="p" type="password" autocomplete="new-password"><div class="row"><button class="btn" id="go">Create admin</button></div></div>';
+  $('#go').onclick = async () => { try { await api('/api/setup', {name:$('#n').value, username:$('#u').value, password:$('#p').value}); toast('Admin created. Log in now.'); boot(); } catch(e){ toast(e.message); } };
+}
+function loginView(){
+  $('#nav').innerHTML = '';
+  app.innerHTML = '<div class="card center"><h2>Media Team</h2><p class="ar" style="margin:0 0 6px">فريق الميديا – فله وتباتيك</p>' +
+    '<label>Username</label><input id="u" autocapitalize="off" autocomplete="username"><label>Password</label><input id="p" type="password" autocomplete="current-password">' +
+    '<div class="row"><button class="btn" id="go">Log in</button></div><p class="muted small">No account? Ask Rashad.</p></div>';
+  const go = async () => { try { await api('/api/login', {username:$('#u').value, password:$('#p').value}); boot(); } catch(e){ toast(e.message); } };
+  $('#go').onclick = go; $('#p').onkeydown = e => { if (e.key === 'Enter') go(); };
+}
+
+let TASKS = [];
+async function loadTasks(){ const j = await api('/api/tasks'); TASKS = j.tasks; return j; }
+function subsHtml(t){
+  if (!t.subs.length) return '';
+  return '<div class="subs"><b class="small">Submissions</b>' + t.subs.map(s =>
+    '<div class="sub"><div class="small muted">' + esc(s.by_name || '') + ' · ' + esc(s.created) + '</div>' +
+    (s.file ? '<div>📎 <a href="/files/' + esc(s.file) + '" target="_blank">' + esc(s.file_name || 'file') + '</a></div>' : '') +
+    (s.link ? '<div>🔗 <a href="' + esc(s.link) + '" target="_blank" rel="noopener">link</a></div>' : '') +
+    (s.note ? '<div>' + esc(s.note) + '</div>' : '') + (s.caption ? '<div class="small"><b>Caption:</b> ' + esc(s.caption) + '</div>' : '') +
+    (s.review ? '<div class="small" style="margin-top:4px"><b>' + (s.review === 'approve' ? '✅ Approved' : '✏️ Changes') + '</b> ' + esc(s.review_note || '') + '</div>' : '') +
+    '</div>').join('') + '</div>';
+}
+function taskCard(t, opts = {}){
+  const actions = [];
+  if (opts.mine && !['Done','Submitted'].includes(t.status)) {
+    if (t.status === 'Not Started') actions.push('<button class="btn ghost" data-a="start" data-k="' + t.key + '">▶️ Start</button>');
+    actions.push('<button class="btn" data-a="submit" data-k="' + t.key + '">📤 Submit</button>');
+  }
+  if (opts.review && t.status === 'Submitted') actions.push('<button class="btn ok" data-a="approve" data-k="' + t.key + '">✅ Approve</button><button class="btn no" data-a="changes" data-k="' + t.key + '">✏️ Changes</button>');
+  return '<div class="task"><div class="top"><div><b class="t">' + esc(t.task) + '</b>' + (t.detail ? '<div class="small">' + esc(t.detail) + '</div>' : '') + '</div>' + statusPill(t) + '</div>' +
+    '<div class="meta"><span>📅 ' + esc(fmt(t.due) || t.timing) + '</span>' + (opts.showOwner ? '<span>👤 ' + esc(t.owner) + '</span>' : '') +
+    (t.priority ? '<span>⚑ ' + esc(t.priority) + '</span>' : '') + (t.deliverable ? '<span>🎯 ' + esc(t.deliverable) + '</span>' : '') + (t.support ? '<span>🤝 ' + esc(t.support) + '</span>' : '') + '</div>' +
+    subsHtml(t) + (actions.length ? '<div class="row">' + actions.join('') + '</div>' : '') + '</div>';
+}
+function byWeek(list){ const w = {}; list.forEach(t => (w[t.week] = w[t.week] || []).push(t)); return Object.keys(w).sort((a,b) => b - a).map(k => [k, w[k]]); }
+async function tasksView(){
+  app.innerHTML = '<p class="muted">Loading…</p>';
+  try { await loadTasks(); } catch(e){ app.innerHTML = '<div class="card">' + esc(e.message) + '</div>'; return; }
+  const mine = ME.role === 'member';
+  const list = mine ? TASKS : TASKS;
+  let h = '<h2>' + (mine ? 'My tasks' : 'All media tasks') + '</h2><p class="lead">' + (mine ? 'Only your tasks. Submit your work here when you finish.' : 'Everything in the Marketing and Media tab.') + '</p>';
+  if (!list.length) h += '<div class="card">No tasks yet for you this week. 🎉</div>';
+  byWeek(list).forEach(([w, ts]) => {
+    const pubNote = ME.role === 'admin' && !ts[0].published ? ' <span class="pill soon">Hidden from the team</span>' : '';
+    h += '<div class="week">Week ' + w + ' –' + pubNote + '</div>' + ts.map(t => taskCard(t, {mine: mine || /rashad/i.test(t.owner) && ME.role === 'admin', showOwner: !mine, review: !mine && ME.role !== 'viewer'})).join('');
+  });
+  app.innerHTML = h; bindTaskActions();
+}
+function bindTaskActions(){
+  app.onclick = async e => {
+    const b = e.target.closest('button[data-a]'); if (!b) return;
+    const k = b.dataset.k, a = b.dataset.a;
+    try {
+      if (a === 'start') { await api('/api/tasks/' + k + '/status', {status:'In Progress'}); toast('Started'); }
+      else if (a === 'submit') return submitDialog(k);
+      else if (a === 'approve' || a === 'changes') return reviewDialog(k, a);
+      show(VIEW);
+    } catch(err){ toast(err.message); }
+  };
+}
+function submitDialog(k){
+  const t = TASKS.find(x => x.key === k), d = $('#dlg');
+  d.innerHTML = '<h3>Submit: ' + esc(t.task) + '</h3><label>File (image or video, up to 25 MB)</label><input type="file" id="sf" accept="image/*,video/*,application/pdf">' +
+    '<label>Or a link (Drive, Canva…)</label><input id="sl" placeholder="https://"><label>Caption (if it is a post)</label><textarea id="sc" dir="auto"></textarea>' +
+    '<label>Note</label><textarea id="sn" dir="auto" style="min-height:60px"></textarea><div class="row"><button class="btn" id="ok">📤 Submit</button><button class="btn ghost" id="cx">Cancel</button></div>';
+  d.showModal(); $('#cx').onclick = () => d.close();
+  $('#ok').onclick = async () => {
+    const f = $('#sf').files[0]; let file = null;
+    if (f) { if (f.size > 25 * 1024 * 1024) return toast('File is bigger than 25 MB. Use a link.'); file = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(f); }); }
+    $('#ok').disabled = true;
+    try { await api('/api/tasks/' + k + '/submit', {file, file_name: f && f.name, link:$('#sl').value, caption:$('#sc').value, note:$('#sn').value}); d.close(); toast('Submitted ✅'); show(VIEW); }
+    catch(e){ toast(e.message); $('#ok').disabled = false; }
+  };
+}
+function reviewDialog(k, a){
+  const t = TASKS.find(x => x.key === k), d = $('#dlg');
+  d.innerHTML = '<h3>' + (a === 'approve' ? '✅ Approve' : '✏️ Ask for changes') + '</h3><p>' + esc(t.task) + ' · ' + esc(t.owner) + '</p><label>Comment' + (a === 'changes' ? ' (what to change)' : ' (optional)') + '</label><textarea id="rn" dir="auto"></textarea>' +
+    '<div class="row"><button class="btn ' + (a === 'approve' ? 'ok' : 'no') + '" id="ok">Send</button><button class="btn ghost" id="cx">Cancel</button></div>';
+  d.showModal(); $('#cx').onclick = () => d.close();
+  $('#ok').onclick = async () => { if (a === 'changes' && !$('#rn').value.trim()) return toast('Write what to change');
+    try { await api('/api/tasks/' + k + '/review', {verdict: a === 'approve' ? 'approve' : 'changes', note:$('#rn').value}); d.close(); toast('Done'); show(VIEW); } catch(e){ toast(e.message); } };
+}
+async function reviewView(){
+  await loadTasks();
+  const wait = TASKS.filter(t => t.status === 'Submitted');
+  app.innerHTML = '<h2>Review</h2><p class="lead">Work waiting for your OK.</p>' + (wait.length ? wait.map(t => taskCard(t, {showOwner:true, review:true})).join('') : '<div class="card">Nothing waiting. 👌</div>');
+  bindTaskActions();
+}
+async function teamView(){
+  await loadTasks();
+  const owners = {};
+  TASKS.forEach(t => (t.owner || '—').split(/,| and /).map(s => s.trim()).filter(Boolean).forEach(o => { (owners[o] = owners[o] || []).push(t); }));
+  const late = TASKS.filter(t => t.status !== 'Done' && left(t.due) !== null && left(t.due) < 0);
+  const done = TASKS.filter(t => t.status === 'Done').length;
+  let h = '<h2>Team</h2><div class="stat" style="margin:12px 0 18px"><div><b>' + TASKS.length + '</b>tasks</div><div><b>' + done + '</b>done</div><div><b>' + TASKS.filter(t => t.status === 'Submitted').length + '</b>waiting review</div><div><b style="color:var(--red)">' + late.length + '</b>late</div></div>';
+  h += '<div class="card"><table><tr><th>Person</th><th>Tasks</th><th>Done</th><th>Progress</th></tr>' + Object.entries(owners).map(([o, ts]) => {
+    const d = ts.filter(t => t.status === 'Done').length, p = Math.round(100 * d / ts.length);
+    return '<tr><td><b>' + esc(o) + '</b></td><td>' + ts.length + '</td><td>' + d + '</td><td style="min-width:120px">' + p + '%<div class="bar2"><i style="width:' + p + '%"></i></div></td></tr>'; }).join('') + '</table></div>';
+  if (late.length) h += '<h3>🔴 Late</h3>' + late.map(t => taskCard(t, {showOwner:true})).join('');
+  app.innerHTML = h;
+}
+
+async function adminView(){
+  app.innerHTML = '<h2>Admin</h2><p class="lead">Only you see this.</p><div class="tabs" id="at">' +
+    [['users','👤 Users'],['weeks','🗓️ Weeks & sync'],['settings','⚙️ Settings'],['log','🕓 Activity']].map(([k,l]) => '<button data-t="' + k + '" class="' + (k === AT ? 'on' : '') + '">' + l + '</button>').join('') + '</div><div id="ab"></div>';
+  $('#at').onclick = e => { const b = e.target.closest('button'); if (!b) return; AT = b.dataset.t; adminView(); };
+  ({users:aUsers, weeks:aWeeks, settings:aSettings, log:aLog})[AT]();
+}
+async function aUsers(){
+  const {users} = await api('/api/admin/users');
+  $('#ab').innerHTML = '<div class="card"><div class="row" style="margin:0 0 10px;justify-content:space-between"><h3>Users</h3><button class="btn" id="add">＋ Add user</button></div><table><tr><th>Name</th><th>Username</th><th>Name in sheet</th><th>Role</th><th></th></tr>' +
+    users.map(u => '<tr><td><b>' + esc(u.name) + '</b>' + (u.active ? '' : ' <span class="pill late">off</span>') + '<div class="small muted">' + esc(u.job) + '</div></td><td>' + esc(u.username) + '</td><td>' + esc(u.sheet_name) + '</td><td>' + esc(u.role) + '</td><td><button class="btn ghost" data-id="' + u.id + '">Edit</button></td></tr>').join('') +
+    '</table><p class="small muted">"Name in sheet" must match how the name is written in the Owner column (e.g. Suhad Shami).</p></div>';
+  $('#add').onclick = () => userDialog({role:'member', active:1});
+  $('#ab').querySelectorAll('[data-id]').forEach(b => b.onclick = () => userDialog(users.find(u => u.id == b.dataset.id)));
+}
+function userDialog(u){
+  const d = $('#dlg');
+  d.innerHTML = '<h3>' + (u.id ? 'Edit user' : 'Add user') + '</h3><div class="grid2"><div><label>Name</label><input id="un" value="' + esc(u.name) + '"></div><div><label>Username</label><input id="uu" autocapitalize="off" value="' + esc(u.username) + '"></div>' +
+    '<div><label>Name in sheet (Owner)</label><input id="us" value="' + esc(u.sheet_name) + '"></div><div><label>Role</label><select id="ur">' + ['admin','head','member','viewer'].map(r => '<option' + (r === u.role ? ' selected' : '') + '>' + r + '</option>').join('') + '</select></div></div>' +
+    '<label>Job (shown on the team page)</label><input id="uj" value="' + esc(u.job) + '"><label>' + (u.id ? 'New password (leave empty to keep)' : 'Password (6+ characters)') + '</label><input id="up" type="password" autocomplete="new-password">' +
+    (u.id ? '<label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="ua" style="width:auto"' + (u.active ? ' checked' : '') + '> Active</label>' : '') +
+    '<div class="row"><button class="btn" id="ok">Save</button><button class="btn ghost" id="cx">Cancel</button></div>';
+  d.showModal(); $('#cx').onclick = () => d.close();
+  $('#ok').onclick = async () => { try { await api('/api/admin/users', {id:u.id, name:$('#un').value, username:$('#uu').value, sheet_name:$('#us').value, role:$('#ur').value, job:$('#uj').value, password:$('#up').value, active: u.id ? $('#ua').checked : true}); d.close(); toast('Saved'); aUsers(); } catch(e){ toast(e.message); } };
+}
+async function aWeeks(){
+  const j = await loadTasks();
+  const weeks = byWeek(TASKS);
+  $('#ab').innerHTML = '<div class="card"><div class="row" style="margin:0;justify-content:space-between"><div><h3>Sheet sync</h3><div class="small muted">Last sync: ' + esc(j.last_sync || 'never') + ' · auto every 10 minutes</div></div><button class="btn" id="sync">🔄 Sync now</button></div></div>' +
+    '<div class="card"><h3>Weeks</h3><p class="small muted">The team only sees a week after you publish it (after the founders approve it).</p><table><tr><th>Week</th><th>Tasks</th><th>Shown to team</th></tr>' +
+    weeks.map(([w, ts]) => '<tr><td><b>Week ' + w + '</b></td><td>' + ts.length + '</td><td><label style="display:flex;gap:8px;align-items:center;margin:0"><input type="checkbox" style="width:auto" data-w="' + w + '"' + (ts[0].published ? ' checked' : '') + '> ' + (ts[0].published ? 'Published' : 'Hidden') + '</label></td></tr>').join('') + '</table></div>';
+  $('#sync').onclick = async () => { $('#sync').disabled = true; try { const r = await api('/api/admin/sync', {}); toast('Synced ' + r.count + ' tasks'); aWeeks(); } catch(e){ toast(e.message); $('#sync').disabled = false; } };
+  $('#ab').querySelectorAll('[data-w]').forEach(c => c.onchange = async () => { await api('/api/admin/weeks', {n:+c.dataset.w, published:c.checked}); toast(c.checked ? 'Week published' : 'Week hidden'); aWeeks(); });
+}
+async function aSettings(){
+  const s = await api('/api/admin/settings');
+  $('#ab').innerHTML = '<div class="card"><h3>Sheet bridge</h3><label>Bridge URL (Apps Script web app)</label><input id="bu" value="' + esc(s.bridge_url) + '"><label>Bridge token</label><input id="bt" type="password" placeholder="' + (s.bridge_token ? 'saved (type to change)' : 'not set') + '">' +
+    '<h3 style="margin-top:16px">Site</h3><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="mm" style="width:auto"' + (s.maintenance === '1' ? ' checked' : '') + '> Maintenance mode (only admins can enter)</label>' +
+    '<label>Phone alerts channel (ntfy, optional)</label><input id="nt" value="' + esc(s.ntfy) + '"><div class="row"><button class="btn" id="ok">Save</button></div></div>';
+  $('#ok').onclick = async () => { const b = {bridge_url:$('#bu').value, maintenance:$('#mm').checked ? '1' : '0', ntfy:$('#nt').value}; if ($('#bt').value) b.bridge_token = $('#bt').value;
+    try { await api('/api/admin/settings', b); toast('Saved'); } catch(e){ toast(e.message); } };
+}
+async function aLog(){
+  const {log} = await api('/api/admin/log');
+  $('#ab').innerHTML = '<div class="card"><table><tr><th>When</th><th>Who</th><th>What</th></tr>' + log.map(l => '<tr><td class="small">' + esc(l.at) + '</td><td>' + esc(l.name || '—') + '</td><td>' + esc(l.what) + '</td></tr>').join('') + '</table></div>';
+}
+function meView(){
+  app.innerHTML = '<div class="card center"><h3>' + esc(ME.name) + '</h3><p class="muted">' + esc(ME.role) + '</p><label>Old password</label><input id="o" type="password"><label>New password</label><input id="n" type="password" autocomplete="new-password">' +
+    '<div class="row"><button class="btn" id="ch">Change password</button><button class="btn ghost" id="lo">Log out</button></div></div>';
+  $('#ch').onclick = async () => { try { await api('/api/password', {old:$('#o').value, new:$('#n').value}); toast('Password changed'); } catch(e){ toast(e.message); } };
+  $('#lo').onclick = async () => { await api('/api/logout', {}); ME = null; boot(); };
+}
+boot();
+</script>
+</body>
+</html>

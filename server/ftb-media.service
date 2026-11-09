@@ -1,0 +1,14 @@
+[Unit]
+Description=Fla w Tbatik media team site
+After=network-online.target
+
+[Service]
+WorkingDirectory=/home/rashad/ftb-media/server
+Environment=FTB_DATA=/home/rashad/ftb-media-data
+Environment=FTB_PORT=8090
+ExecStart=/usr/bin/python3 /home/rashad/ftb-media/server/app.py
+Restart=always
+User=rashad
+
+[Install]
+WantedBy=multi-user.target
