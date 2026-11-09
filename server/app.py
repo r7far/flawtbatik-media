@@ -548,8 +548,9 @@ def periodic_sync():
 
 
 def no_users():
+    """True while there is no admin who has set a password (first setup still open)."""
     with db() as c:
-        return c.execute('SELECT COUNT(*) n FROM users').fetchone()['n'] == 0
+        return c.execute("SELECT COUNT(*) n FROM users WHERE role='admin' AND pw<>''").fetchone()['n'] == 0
 
 
 if __name__ == '__main__':
