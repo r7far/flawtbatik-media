@@ -15,7 +15,7 @@ const HEAD = ['Department', 'Phase', 'Category', 'Task', 'Subtask / Detail', 'Ow
 const STATUSES = ['Not Started', 'In Progress', 'Submitted', 'Changes requested', 'Done'];
 
 function sheet_() {
-  const sh = SpreadsheetApp.getActive().getSheetByName(TAB);
+  const sh = SpreadsheetApp.openById('1sPoXyi8-DtVihShdf9IoJaGcTVnSdv1YFBD8rlCy2BE').getSheetByName(TAB);
   if (!sh) throw new Error('Tab not found: ' + TAB);
   return sh;
 }
