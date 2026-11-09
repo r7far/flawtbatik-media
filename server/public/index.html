@@ -241,13 +241,13 @@ async function adminView(){
   ({users:aUsers, weeks:aWeeks, settings:aSettings, log:aLog})[AT]();
 }
 async function aUsers(){
-  const {users} = await api('/api/admin/users');
+  const {users, public: pub} = await api('/api/admin/users');
   $('#ab').innerHTML = '<div class="card"><div class="row" style="margin:0 0 10px;justify-content:space-between"><h3>Users</h3><button class="btn" id="add">＋ Add user</button></div><table><tr><th>Name</th><th>Username</th><th>Name in sheet</th><th>Role</th><th></th></tr>' +
     users.map(u => '<tr><td><b>' + esc(u.name) + '</b>' + (u.active ? '' : ' <span class="pill late">off</span>') + '<div class="small muted">' + esc(u.job) + '</div>' + (u.invite ? '<div class="row" style="margin-top:6px"><span class="pill soon">Waiting to set password</span><button class="btn ghost" data-copy="' + esc(u.invite) + '">📋 Copy invite link</button></div>' : '') + '</td><td>' + esc(u.username) + '</td><td>' + esc(u.sheet_name) + '</td><td>' + esc(u.role) + '</td><td><button class="btn ghost" data-id="' + u.id + '">Edit</button></td></tr>').join('') +
     '</table><p class="small muted">"Name in sheet" must match how the name is written in the Owner column (e.g. Suhad Shami).</p></div>';
   $('#add').onclick = () => userDialog({role:'member', active:1});
   $('#ab').querySelectorAll('[data-id]').forEach(b => b.onclick = () => userDialog(users.find(u => u.id == b.dataset.id)));
-  $('#ab').querySelectorAll('[data-copy]').forEach(b => b.onclick = () => copyText(location.origin + b.dataset.copy).then(() => toast('Invite link copied. Send it to them on WhatsApp.')));
+  $('#ab').querySelectorAll('[data-copy]').forEach(b => b.onclick = () => copyText((pub || location.origin) + b.dataset.copy).then(() => toast('Invite link copied. Send it to them on WhatsApp.')));
 }
 function userDialog(u){
   const d = $('#dlg');

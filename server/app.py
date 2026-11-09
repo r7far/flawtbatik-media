@@ -467,7 +467,8 @@ class H(BaseHTTPRequestHandler):
             if p == '/api/admin/users':
                 if method == 'GET':
                     with db() as c:
-                        return self.send(200, {'users': [user_public(r, True) for r in c.execute('SELECT * FROM users ORDER BY id')]})
+                        return self.send(200, {'users': [user_public(r, True) for r in c.execute('SELECT * FROM users ORDER BY id')],
+                                               'public': public_url()})
                 uid = b.get('id')
                 fields = {k: (b.get(k) or '').strip() for k in ('username', 'name', 'sheet_name', 'role', 'job')}
                 fields['username'] = fields['username'].lower()
@@ -535,6 +536,19 @@ class H(BaseHTTPRequestHandler):
                     rows = [dict(r) for r in c.execute('SELECT l.at,l.what,u.name FROM log l LEFT JOIN users u ON u.id=l.user_id ORDER BY l.id DESC LIMIT 300')]
                 return self.send(200, {'log': rows})
         return self.err(404, 'Not found')
+
+
+def public_url():
+    """Outside link: a fixed one from settings, else the current Cloudflare quick-tunnel name."""
+    fixed = setting('public_url')
+    if fixed:
+        return fixed.rstrip('/')
+    try:
+        with urllib.request.urlopen('http://127.0.0.1:20241/quicktunnel', timeout=2) as r:
+            host = json.load(r).get('hostname')
+        return 'https://' + host if host else ''
+    except Exception:
+        return ''
 
 
 def periodic_sync():
