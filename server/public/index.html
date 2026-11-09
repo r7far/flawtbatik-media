@@ -73,6 +73,7 @@ dialog::backdrop{background:rgba(0,0,0,.35)}
 <div class="toast" id="toast"></div>
 <script>
 const $ = s => document.querySelector(s), app = $('#app');
+const copyText = t => (navigator.clipboard && window.isSecureContext) ? navigator.clipboard.writeText(t) : new Promise((ok, no) => { const a = document.createElement('textarea'); a.value = t; a.style.position = 'fixed'; a.style.opacity = '0'; document.body.appendChild(a); a.select(); const r = document.execCommand('copy'); a.remove(); r ? ok() : no(); });
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const toast = m => { const t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 2200); };
 async function api(path, body){
@@ -246,7 +247,7 @@ async function aUsers(){
     '</table><p class="small muted">"Name in sheet" must match how the name is written in the Owner column (e.g. Suhad Shami).</p></div>';
   $('#add').onclick = () => userDialog({role:'member', active:1});
   $('#ab').querySelectorAll('[data-id]').forEach(b => b.onclick = () => userDialog(users.find(u => u.id == b.dataset.id)));
-  $('#ab').querySelectorAll('[data-copy]').forEach(b => b.onclick = () => navigator.clipboard.writeText(location.origin + b.dataset.copy).then(() => toast('Invite link copied. Send it to them on WhatsApp.')));
+  $('#ab').querySelectorAll('[data-copy]').forEach(b => b.onclick = () => copyText(location.origin + b.dataset.copy).then(() => toast('Invite link copied. Send it to them on WhatsApp.')));
 }
 function userDialog(u){
   const d = $('#dlg');
@@ -275,7 +276,7 @@ async function aSettings(){
     '<label>Phone alerts channel (ntfy, optional)</label><input id="nt" value="' + esc(s.ntfy) + '"><div class="row"><button class="btn" id="ok">Save</button></div></div>';
   $('#gt').onclick = async () => { if (!confirm('Make a new token? The old one stops working.')) return; const r = await api('/api/admin/token', {});
     $('#tokbox').innerHTML = '<p class="small" style="margin:8px 0 4px">Copy it now and paste it in Apps Script › Project Settings › Script properties as <b>BRIDGE_TOKEN</b>. It is shown only once.</p><input readonly value="' + esc(r.token) + '" onclick="this.select()"><div class="row"><button class="btn ghost" id="cp">📋 Copy</button></div>';
-    $('#cp').onclick = () => navigator.clipboard.writeText(r.token).then(() => toast('Copied')); };
+    $('#cp').onclick = () => copyText(r.token).then(() => toast('Copied')); };
   $('#ok').onclick = async () => { const b = {bridge_url:$('#bu').value, maintenance:$('#mm').checked ? '1' : '0', ntfy:$('#nt').value};
     try { await api('/api/admin/settings', b); toast('Saved'); } catch(e){ toast(e.message); } };
 }
