@@ -47,6 +47,9 @@ def init_db():
           file_name TEXT, note TEXT, caption TEXT, created TEXT, review TEXT, review_by INTEGER, review_note TEXT, reviewed TEXT);
         CREATE TABLE IF NOT EXISTS log(id INTEGER PRIMARY KEY, at TEXT, user_id INTEGER, what TEXT);
         ''')
+        cols = [r['name'] for r in c.execute('PRAGMA table_info(users)')]
+        if 'invite' not in cols:
+            c.execute('ALTER TABLE users ADD COLUMN invite TEXT')
 
 
 # ---------- helpers ----------
@@ -61,6 +64,8 @@ def hash_pw(pw, salt=None):
 
 
 def check_pw(pw, stored):
+    if not stored:
+        return False
     try:
         salt, _ = stored.split('$', 1)
         return hmac.compare_digest(hash_pw(pw, salt), stored)
@@ -84,8 +89,21 @@ def log(uid, what):
         c.execute('INSERT INTO log(at,user_id,what) VALUES(?,?,?)', (now_iso(), uid, what[:500]))
 
 
-def user_public(u):
-    return {k: u[k] for k in ('id', 'username', 'name', 'sheet_name', 'role', 'job', 'active')}
+def user_public(u, admin=False):
+    d = {k: u[k] for k in ('id', 'username', 'name', 'sheet_name', 'role', 'job', 'active')}
+    if admin:
+        d['invite'] = ('/invite/' + u['invite']) if u['invite'] else ''
+        d['has_password'] = bool(u['pw'])
+    return d
+
+
+def add_user(username, name, sheet_name, role, job=''):
+    """Create a user without a password and return the invite token (they set their own password)."""
+    tok = secrets.token_urlsafe(18)
+    with db() as c:
+        c.execute('INSERT INTO users(username,name,sheet_name,role,job,pw,created,invite) VALUES(?,?,?,?,?,?,?,?)',
+                  (username.lower(), name, sheet_name, role, job, '', now_iso(), tok))
+    return tok
 
 
 # ---------- sheet bridge ----------
@@ -347,6 +365,21 @@ class H(BaseHTTPRequestHandler):
                 c.execute('UPDATE users SET pw=? WHERE id=?', (hash_pw(b['new']), u['id']))
             return self.send(200, {'ok': True})
 
+        m = R(r'/api/invite/([\w-]{10,40})')
+        if m:
+            with db() as c:
+                iu = c.execute('SELECT * FROM users WHERE invite=? AND active=1', (m.group(1),)).fetchone()
+            if not iu:
+                return self.err(404, 'This invite link is not valid any more. Ask Rashad for a new one.')
+            if method == 'GET':
+                return self.send(200, {'name': iu['name'], 'username': iu['username']})
+            if len(b.get('password') or '') < 6:
+                return self.err(400, 'Password must be at least 6 characters')
+            with db() as c:
+                c.execute('UPDATE users SET pw=?, invite=NULL WHERE id=?', (hash_pw(b['password']), iu['id']))
+            log(iu['id'], 'set own password from invite')
+            return self.send(200, {'ok': True, 'username': iu['username']})
+
         # ---- tasks
         if p == '/api/tasks':
             u = self.need()
@@ -434,7 +467,7 @@ class H(BaseHTTPRequestHandler):
             if p == '/api/admin/users':
                 if method == 'GET':
                     with db() as c:
-                        return self.send(200, {'users': [user_public(r) for r in c.execute('SELECT * FROM users ORDER BY id')]})
+                        return self.send(200, {'users': [user_public(r, True) for r in c.execute('SELECT * FROM users ORDER BY id')]})
                 uid = b.get('id')
                 fields = {k: (b.get(k) or '').strip() for k in ('username', 'name', 'sheet_name', 'role', 'job')}
                 fields['username'] = fields['username'].lower()
@@ -452,13 +485,13 @@ class H(BaseHTTPRequestHandler):
                         if not b.get('active', True):
                             c.execute('DELETE FROM sessions WHERE user_id=?', (uid,))
                     else:
-                        if len(b.get('password') or '') < 6:
-                            return self.err(400, 'Password must be at least 6 characters')
-                        try:
-                            c.execute('INSERT INTO users(username,name,sheet_name,role,job,pw,created) VALUES(?,?,?,?,?,?,?)',
-                                      (*fields.values(), hash_pw(b['password']), now_iso()))
-                        except sqlite3.IntegrityError:
+                        if c.execute('SELECT 1 FROM users WHERE username=?', (fields['username'],)).fetchone():
                             return self.err(400, 'This username is taken')
+                if not uid:
+                    add_user(fields['username'], fields['name'], fields['sheet_name'], fields['role'], fields['job'])
+                    if b.get('password'):
+                        with db() as c:
+                            c.execute('UPDATE users SET pw=?, invite=NULL WHERE username=?', (hash_pw(b['password']), fields['username']))
                 log(u['id'], 'user saved: %s' % fields['username'])
                 return self.send(200, {'ok': True})
             if p == '/api/admin/sync' and method == 'POST':
@@ -484,6 +517,13 @@ class H(BaseHTTPRequestHandler):
                         set_setting(k, str(b[k]).strip())
                 log(u['id'], 'settings changed')
                 return self.send(200, {'ok': True})
+            if p == '/api/admin/invite' and method == 'POST':
+                tok = secrets.token_urlsafe(18)
+                with db() as c:
+                    c.execute('UPDATE users SET invite=?, pw=? WHERE id=?', (tok, '', int(b['id'])))
+                    c.execute('DELETE FROM sessions WHERE user_id=?', (int(b['id']),))
+                log(u['id'], 'new invite link for user %s' % b['id'])
+                return self.send(200, {'ok': True, 'invite': '/invite/' + tok})
             if p == '/api/admin/token' and method == 'POST':
                 # New bridge token, shown once so Rashad can paste it into the Apps Script properties.
                 tok = secrets.token_urlsafe(24)
@@ -513,7 +553,17 @@ def no_users():
 
 
 if __name__ == '__main__':
+    import sys
     init_db()
+    if len(sys.argv) > 1 and sys.argv[1] == 'adduser':
+        # python3 app.py adduser USERNAME "Full Name" ROLE ["Name in sheet"] ["Job"]
+        a = sys.argv[2:] + ['', '']
+        try:
+            add_user(a[0], a[1], a[3] or a[1], a[2], a[4])
+            print('added', a[0], '(invite link is in Admin › Users)')
+        except sqlite3.IntegrityError:
+            print('exists', a[0])
+        sys.exit(0)
     threading.Thread(target=periodic_sync, daemon=True).start()
     print('FTB media on :%d' % PORT, flush=True)
     ThreadingHTTPServer(('0.0.0.0', PORT), H).serve_forever()

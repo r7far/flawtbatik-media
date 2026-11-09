@@ -99,6 +99,8 @@ function statusPill(t){
 }
 
 async function boot(){
+  const inv = location.pathname.match(/^\/invite\/([\w-]+)/);
+  if (inv) return inviteView(inv[1]);
   const me = await api('/api/me');
   ME = me.user;
   if (me.setup) return setupView();
@@ -121,6 +123,14 @@ function setupView(){
     '<label>Your name</label><input id="n" value="Rashad"><label>Username</label><input id="u" value="rashad" autocapitalize="off">' +
     '<label>Password (8+ characters)</label><input id="p" type="password" autocomplete="new-password"><div class="row"><button class="btn" id="go">Create admin</button></div></div>';
   $('#go').onclick = async () => { try { await api('/api/setup', {name:$('#n').value, username:$('#u').value, password:$('#p').value}); toast('Admin created. Log in now.'); boot(); } catch(e){ toast(e.message); } };
+}
+async function inviteView(tok){
+  $('#nav').innerHTML = '';
+  let u; try { u = await api('/api/invite/' + tok); } catch(e){ app.innerHTML = '<div class="card center"><h3>Link not valid</h3><p>' + esc(e.message) + '</p></div>'; return; }
+  app.innerHTML = '<div class="card center"><h2>Welcome ' + esc(u.name.split(' ')[0]) + ' 👋</h2><p class="ar" style="margin:0 0 6px">أهلًا فيك في فريق الميديا</p><p class="muted">Your username is <b>' + esc(u.username) + '</b>. Choose your password.</p>' +
+    '<label>Password (6+ characters)</label><input id="p1" type="password" autocomplete="new-password"><label>Again</label><input id="p2" type="password" autocomplete="new-password"><div class="row"><button class="btn" id="go">Save and log in</button></div></div>';
+  $('#go').onclick = async () => { if ($('#p1').value !== $('#p2').value) return toast('Passwords are not the same');
+    try { const r = await api('/api/invite/' + tok, {password:$('#p1').value}); await api('/api/login', {username:r.username, password:$('#p1').value}); history.replaceState(null, '', '/'); boot(); } catch(e){ toast(e.message); } };
 }
 function loginView(){
   $('#nav').innerHTML = '';
@@ -232,20 +242,22 @@ async function adminView(){
 async function aUsers(){
   const {users} = await api('/api/admin/users');
   $('#ab').innerHTML = '<div class="card"><div class="row" style="margin:0 0 10px;justify-content:space-between"><h3>Users</h3><button class="btn" id="add">＋ Add user</button></div><table><tr><th>Name</th><th>Username</th><th>Name in sheet</th><th>Role</th><th></th></tr>' +
-    users.map(u => '<tr><td><b>' + esc(u.name) + '</b>' + (u.active ? '' : ' <span class="pill late">off</span>') + '<div class="small muted">' + esc(u.job) + '</div></td><td>' + esc(u.username) + '</td><td>' + esc(u.sheet_name) + '</td><td>' + esc(u.role) + '</td><td><button class="btn ghost" data-id="' + u.id + '">Edit</button></td></tr>').join('') +
+    users.map(u => '<tr><td><b>' + esc(u.name) + '</b>' + (u.active ? '' : ' <span class="pill late">off</span>') + '<div class="small muted">' + esc(u.job) + '</div>' + (u.invite ? '<div class="row" style="margin-top:6px"><span class="pill soon">Waiting to set password</span><button class="btn ghost" data-copy="' + esc(u.invite) + '">📋 Copy invite link</button></div>' : '') + '</td><td>' + esc(u.username) + '</td><td>' + esc(u.sheet_name) + '</td><td>' + esc(u.role) + '</td><td><button class="btn ghost" data-id="' + u.id + '">Edit</button></td></tr>').join('') +
     '</table><p class="small muted">"Name in sheet" must match how the name is written in the Owner column (e.g. Suhad Shami).</p></div>';
   $('#add').onclick = () => userDialog({role:'member', active:1});
   $('#ab').querySelectorAll('[data-id]').forEach(b => b.onclick = () => userDialog(users.find(u => u.id == b.dataset.id)));
+  $('#ab').querySelectorAll('[data-copy]').forEach(b => b.onclick = () => navigator.clipboard.writeText(location.origin + b.dataset.copy).then(() => toast('Invite link copied. Send it to them on WhatsApp.')));
 }
 function userDialog(u){
   const d = $('#dlg');
   d.innerHTML = '<h3>' + (u.id ? 'Edit user' : 'Add user') + '</h3><div class="grid2"><div><label>Name</label><input id="un" value="' + esc(u.name) + '"></div><div><label>Username</label><input id="uu" autocapitalize="off" value="' + esc(u.username) + '"></div>' +
     '<div><label>Name in sheet (Owner)</label><input id="us" value="' + esc(u.sheet_name) + '"></div><div><label>Role</label><select id="ur">' + ['admin','head','member','viewer'].map(r => '<option' + (r === u.role ? ' selected' : '') + '>' + r + '</option>').join('') + '</select></div></div>' +
-    '<label>Job (shown on the team page)</label><input id="uj" value="' + esc(u.job) + '"><label>' + (u.id ? 'New password (leave empty to keep)' : 'Password (6+ characters)') + '</label><input id="up" type="password" autocomplete="new-password">' +
+    '<label>Job (shown on the team page)</label><input id="uj" value="' + esc(u.job) + '">' + (u.id ? '<div class="row"><button class="btn ghost" id="ni" type="button">🔗 New invite link (they choose a new password)</button></div>' : '<p class="small muted">After saving, copy their invite link and send it to them. They choose their own password.</p>') +
     (u.id ? '<label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="ua" style="width:auto"' + (u.active ? ' checked' : '') + '> Active</label>' : '') +
     '<div class="row"><button class="btn" id="ok">Save</button><button class="btn ghost" id="cx">Cancel</button></div>';
   d.showModal(); $('#cx').onclick = () => d.close();
-  $('#ok').onclick = async () => { try { await api('/api/admin/users', {id:u.id, name:$('#un').value, username:$('#uu').value, sheet_name:$('#us').value, role:$('#ur').value, job:$('#uj').value, password:$('#up').value, active: u.id ? $('#ua').checked : true}); d.close(); toast('Saved'); aUsers(); } catch(e){ toast(e.message); } };
+  if (u.id) $('#ni').onclick = async () => { if (!confirm('Make a new invite link? Their current password stops working.')) return; await api('/api/admin/invite', {id:u.id}); d.close(); toast('New invite link ready'); aUsers(); };
+  $('#ok').onclick = async () => { try { await api('/api/admin/users', {id:u.id, name:$('#un').value, username:$('#uu').value, sheet_name:$('#us').value, role:$('#ur').value, job:$('#uj').value, active: u.id ? $('#ua').checked : true}); d.close(); toast('Saved'); aUsers(); } catch(e){ toast(e.message); } };
 }
 async function aWeeks(){
   const j = await loadTasks();
