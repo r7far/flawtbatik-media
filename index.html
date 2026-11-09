@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Fla w Tbatik – Media</title>
+<link rel="icon" href="assets/logo.jpeg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Lalezar&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F6F2E6; --surface:#FFFFFF; --ink:#0B0B0B; --muted:#5A656B; --line:#D5CFBD;
+  --slate:#7F99A8; --deep:#4F6877; --cream:#E6DCC0; --red:#C8463D; --amber:#B7791F; --green:#2F7D4F;
+  --r:18px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;font-size:16px;line-height:1.5}
+a{color:var(--deep)}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px}
+header{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:2px solid var(--ink)}
+.bar{display:flex;align-items:center;gap:12px;height:64px}
+.bar img{height:44px;width:auto;border-radius:10px;background:#fff;border:2px solid var(--ink)}
+.bar b{font-family:Lalezar,sans-serif;font-size:22px;font-weight:400;letter-spacing:.3px}
+nav{margin-inline-start:auto;display:flex;gap:6px}
+nav a{text-decoration:none;color:var(--ink);font-weight:600;font-size:14px;padding:8px 12px;border-radius:999px;border:2px solid transparent;white-space:nowrap}
+nav a.on{background:var(--ink);color:var(--bg)}
+nav a:not(.on):hover{border-color:var(--ink)}
+main{padding:24px 16px 64px}
+section[data-page]{display:none}
+section[data-page].on{display:block}
+h1,h2{font-family:Lalezar,sans-serif;font-weight:400;line-height:1.1;margin:0}
+h1{font-size:clamp(38px,8vw,64px)}
+h2{font-size:32px}
+.ar{font-family:"IBM Plex Sans Arabic",sans-serif;direction:rtl;unicode-bidi:isolate;color:var(--muted);font-size:15px}
+.card{background:var(--surface);border:2px solid var(--ink);border-radius:var(--r);box-shadow:4px 4px 0 var(--ink);padding:20px}
+.muted{color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:8px;font:inherit;font-weight:700;font-size:15px;padding:11px 18px;border-radius:999px;border:2px solid var(--ink);background:var(--slate);color:var(--ink);cursor:pointer;text-decoration:none;box-shadow:3px 3px 0 var(--ink)}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.btn.ghost{background:var(--surface)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* home */
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:20px;align-items:stretch;margin-bottom:28px}
+.hero .facts p{margin:6px 0}
+.count{background:var(--deep);color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.count .n{font-family:Lalezar,sans-serif;font-size:84px;line-height:1}
+.week h2{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.week h2 small{font-family:"IBM Plex Sans Arabic";font-size:15px;color:var(--muted)}
+.tasks{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:10px}
+.task{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:14px 16px;border:2px solid var(--ink);border-radius:14px;background:var(--bg)}
+.task .d{font-weight:700;text-align:center;min-width:64px;font-size:14px;line-height:1.2}
+.task .d span{display:block;font-family:Lalezar;font-size:26px;font-weight:400}
+.task .t{font-weight:700}
+.task .ar,.facts .ar{text-align:left}
+.pill{font-size:13px;font-weight:700;padding:4px 10px;border-radius:999px;border:2px solid var(--ink);white-space:nowrap;background:var(--surface)}
+.pill.soon{background:#FFF1CF;color:var(--amber);border-color:var(--amber)}
+.pill.late{background:#FBE1DE;color:var(--red);border-color:var(--red)}
+.pill.today{background:var(--ink);color:#fff}
+.note{margin-top:16px;padding:12px 14px;border-radius:12px;background:var(--cream);font-weight:600}
+.soonrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:22px}
+.lock{border:2px dashed var(--line);border-radius:14px;padding:16px;color:var(--muted)}
+.lock b{color:var(--ink);display:block}
+
+/* grid tool */
+.tool{display:grid;grid-template-columns:330px 1fr;gap:20px;align-items:start}
+.ctrl label.lbl{display:block;font-weight:700;margin:16px 0 8px}
+.seg{display:flex;border:2px solid var(--ink);border-radius:999px;overflow:hidden}
+.seg button{flex:1;font:inherit;font-weight:700;font-size:14px;padding:9px 6px;border:0;background:var(--surface);cursor:pointer}
+.seg button+button{border-inline-start:2px solid var(--ink)}
+.seg button.on{background:var(--ink);color:#fff}
+.drop{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;border:2px dashed var(--ink);border-radius:14px;padding:22px 12px;cursor:pointer;background:var(--bg)}
+.drop.over{background:var(--cream)}
+.drop input{display:none}
+.toggle{display:flex;align-items:center;gap:8px;margin-top:14px;font-weight:600;cursor:pointer}
+.toggle input{width:18px;height:18px;accent-color:var(--deep)}
+.tip{font-size:14px;margin-top:16px;padding:12px;border-radius:12px;background:var(--cream)}
+.phone{max-width:420px;margin:0 auto;background:#fff;border:2px solid var(--ink);border-radius:28px;box-shadow:4px 4px 0 var(--ink);overflow:hidden}
+.ighead{display:flex;align-items:center;gap:14px;padding:16px}
+.ighead img{width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid var(--line)}
+.ighead b{display:block}
+.ighead .stats{display:flex;gap:16px;font-size:13px;color:var(--muted);margin-top:2px}
+.igtabs{border-top:1px solid #e4e4e4;display:flex;justify-content:center;padding:8px 0;font-size:12px;font-weight:700;letter-spacing:1px}
+.iggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:#fff}
+.tile{position:relative;background:#e9e9e9;overflow:hidden}
+.tile canvas{display:block;width:100%;height:100%}
+.tile.old{background:repeating-linear-gradient(45deg,#ececec 0 10px,#e2e2e2 10px 20px)}
+.tile .ord{position:absolute;top:6px;left:6px;background:rgba(11,11,11,.82);color:#fff;font-weight:700;font-size:13px;min-width:26px;height:26px;border-radius:13px;display:flex;align-items:center;justify-content:center;padding:0 7px}
+.dl{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;justify-content:center}
+
+/* brand */
+.brand{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.logo-box{display:flex;flex-direction:column;align-items:center;gap:14px}
+.logo-box img{max-width:100%;width:300px;background:#fff;border-radius:14px}
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:12px}
+.sw{border:2px solid var(--ink);border-radius:14px;overflow:hidden;cursor:pointer;background:var(--surface);text-align:start;font:inherit;padding:0}
+.sw i{display:block;height:64px;border-bottom:2px solid var(--ink)}
+.sw span{display:block;padding:8px 10px;font-size:14px}
+.sw span b{display:block}
+.fonts p{margin:10px 0}
+.wrong{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.wrong s{background:#FBE1DE;color:var(--red);padding:4px 10px;border-radius:999px;font-weight:700;font-size:14px}
+.full{grid-column:1/-1}
+.toast{position:fixed;bottom:20px;left:50%;opacity:0;pointer-events:none;transform:translateX(-50%) translateY(100px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-weight:700;transition:transform .25s;z-index:20}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (max-width:760px){
+  .bar b{display:none}
+  nav a{padding:7px 10px;font-size:13px}
+  .hero,.tool,.brand{grid-template-columns:1fr}
+  .count .n{font-size:64px}
+  h2{font-size:28px}
+  .task{grid-template-columns:auto 1fr}
+  .task .pill{grid-column:2;justify-self:start}
+}
+</style>
+</head>
+<body>
+<header><div class="wrap bar">
+  <img src="assets/logo.jpeg" alt="">
+  <b>Media Team</b>
+  <nav>
+    <a href="#home" data-link="home">This week</a>
+    <a href="#grid" data-link="grid">Grid</a>
+    <a href="#brand" data-link="brand">Brand Kit</a>
+  </nav>
+</div></header>
+
+<main class="wrap">
+
+<!-- HOME -->
+<section data-page="home">
+  <div class="hero">
+    <div class="card facts">
+      <h1 id="evName"></h1>
+      <div class="ar" id="evNameAr"></div>
+      <p style="margin-top:14px"><b>📅 <span id="evDates"></span></b></p>
+      <p><b>📍 <span id="evPlace"></span></b></p>
+    </div>
+    <div class="card count">
+      <div class="n" id="days">–</div>
+      <div><b>days to go</b></div>
+      <div style="opacity:.8;font-size:14px">يوم باقي على الإيفنت</div>
+    </div>
+  </div>
+
+  <div class="card week">
+    <h2 id="weekTitle"></h2>
+    <ul class="tasks" id="tasks"></ul>
+    <div class="note">👀 <span id="headNote"></span></div>
+    <p class="muted" style="margin:14px 0 0;font-size:14px">When you finish a task, change its status in the <a id="sheetLink" target="_blank" rel="noopener">media sheet</a> to ✅ Finished.</p>
+  </div>
+
+  <div class="soonrow" id="soon"></div>
+</section>
+
+<!-- GRID TOOL -->
+<section data-page="grid">
+  <h2>Grid Preview</h2>
+  <p class="muted" style="margin:6px 0 20px">Upload one design. It gets split into posts so your profile shows one big picture. Your image stays on your phone: nothing is uploaded.</p>
+  <div class="tool">
+    <div class="card ctrl">
+      <label class="drop" id="drop">
+        <input type="file" id="file" accept="image/*">
+        <b style="font-size:28px">🖼️</b>
+        <b>Choose your design</b>
+        <span class="muted" style="font-size:14px">or drag it here</span>
+      </label>
+      <label class="lbl">How many posts?</label>
+      <div class="seg" id="segCount">
+        <button data-v="3">3</button><button data-v="6" class="on">6</button><button data-v="9">9</button>
+      </div>
+      <label class="lbl">Post shape</label>
+      <div class="seg" id="segShape">
+        <button data-v="1.3333" class="on">3:4 (profile)</button><button data-v="1">Square</button>
+      </div>
+      <label class="toggle"><input type="checkbox" id="showOrder" checked> Show posting order</label>
+      <label class="toggle"><input type="checkbox" id="showOld" checked> Show older posts under it</label>
+      <div class="tip">💡 Instagram puts the newest post at the top left. So post <b>number 1 first</b> (bottom right) and the top left one last.</div>
+    </div>
+    <div>
+      <div class="phone">
+        <div class="ighead">
+          <img src="assets/logo.jpeg" alt="">
+          <div><b>Fla w Tbatik</b><div class="stats"><span>Profile preview</span></div></div>
+        </div>
+        <div class="igtabs">▦ POSTS</div>
+        <div class="iggrid" id="iggrid"></div>
+      </div>
+      <div class="dl">
+        <button class="btn" id="dlAll" disabled>⬇️ Download all posts</button>
+      </div>
+      <p class="muted" style="text-align:center;font-size:13px;margin-top:8px">Files are named in posting order: post-1 first.</p>
+    </div>
+  </div>
+</section>
+
+<!-- BRAND -->
+<section data-page="brand">
+  <h2>Brand Kit</h2>
+  <p class="muted" style="margin:6px 0 20px">Use these in every post so everything looks like one brand.</p>
+  <div class="brand">
+    <div class="card logo-box">
+      <img src="assets/logo.jpeg" alt="Fla w Tbatik logo">
+      <a class="btn" href="assets/logo.jpeg" download="fla-w-tbatik-logo.jpg">⬇️ Download logo</a>
+    </div>
+    <div class="card">
+      <b>Event facts: always write them like this</b>
+      <p style="margin:10px 0 4px">📅 <span id="bDates"></span></p>
+      <p class="ar" style="margin:0 0 10px" id="bDatesAr"></p>
+      <p style="margin:0 0 4px">📍 <span id="bPlace"></span></p>
+      <p class="ar" style="margin:0" id="bPlaceAr"></p>
+      <p style="margin:16px 0 0"><b>❌ Old dates: never use</b></p>
+      <div class="wrong" id="wrong"></div>
+    </div>
+    <div class="card full">
+      <b>Colors</b> <span class="muted" style="font-size:14px">(tap to copy)</span>
+      <div class="swatches" id="swatches"></div>
+    </div>
+    <div class="card full fonts">
+      <b>Fonts</b>
+      <div id="fonts"></div>
+    </div>
+  </div>
+</section>
+
+</main>
+<div class="toast" id="toast"></div>
+
+<script src="data.js"></script>
+<script>
+const D = window.FTB, $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const toast = m => { const t = $('toast'); t.textContent = m; t.classList.add('on'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 1600); };
+
+/* routing */
+function route(){
+  const p = (location.hash || '#home').slice(1);
+  const page = ['home','grid','brand'].includes(p) ? p : 'home';
+  document.querySelectorAll('[data-page]').forEach(s => s.classList.toggle('on', s.dataset.page === page));
+  document.querySelectorAll('[data-link]').forEach(a => a.classList.toggle('on', a.dataset.link === page));
+  window.scrollTo(0, 0);
+}
+addEventListener('hashchange', route); route();
+
+/* home */
+const riyadhToday = () => { const s = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Riyadh' }); return new Date(s + 'T00:00:00Z'); };
+const dayDiff = iso => Math.round((new Date(iso + 'T00:00:00Z') - riyadhToday()) / 864e5);
+$('evName').textContent = D.event.nameEn; $('evNameAr').textContent = D.event.nameAr;
+$('evDates').textContent = D.event.datesEn; $('evPlace').textContent = D.event.placeEn;
+$('days').textContent = Math.max(0, dayDiff(D.event.start.slice(0, 10)));
+const w = D.weeks[0];
+$('weekTitle').innerHTML = 'Week ' + w.n + ' – <small>' + esc(w.range) + '</small>';
+$('tasks').innerHTML = w.tasks.map(t => {
+  const d = new Date(t.due + 'T00:00:00Z'), left = dayDiff(t.due);
+  const day = d.toLocaleDateString('en-GB', { weekday: 'short', timeZone: 'UTC' });
+  const num = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' });
+  const pill = left < 0 ? '<span class="pill late">' + (-left) + 'd late</span>'
+    : left === 0 ? '<span class="pill today">Today</span>'
+    : '<span class="pill' + (left <= 2 ? ' soon' : '') + '">' + left + (left === 1 ? ' day' : ' days') + ' left</span>';
+  return '<li class="task"><div class="d">' + day + '<span>' + num.split(' ')[0] + '</span>' + num.split(' ')[1] + '</div>' +
+    '<div><div class="t">' + esc(t.en) + '</div><div class="ar">' + esc(t.ar) + '</div><div class="muted" style="font-size:13px">' + esc(t.who) + '</div></div>' + pill + '</li>';
+}).join('');
+$('headNote').textContent = D.head;
+$('sheetLink').href = D.sheet;
+$('soon').innerHTML = D.soon.map(s => '<div class="lock">🔒 <b>' + esc(s.en) + '</b><span class="ar">' + esc(s.ar) + '</span><div style="font-size:13px;margin-top:4px">Coming in the next weeks</div></div>').join('');
+
+/* brand */
+$('bDates').textContent = D.event.datesEn; $('bDatesAr').textContent = D.event.datesAr;
+$('bPlace').textContent = D.event.placeEn; $('bPlaceAr').textContent = D.event.placeAr;
+$('wrong').innerHTML = D.wrongDates.map(x => '<s>' + esc(x) + '</s>').join('');
+$('swatches').innerHTML = D.colors.map(c => '<button class="sw" data-hex="' + c.hex + '"><i style="background:' + c.hex + '"></i><span><b>' + esc(c.name) + '</b>' + c.hex + '</span></button>').join('');
+$('swatches').onclick = e => { const b = e.target.closest('.sw'); if (!b) return;
+  (navigator.clipboard ? navigator.clipboard.writeText(b.dataset.hex) : Promise.reject()).then(() => toast('Copied ' + b.dataset.hex), () => toast(b.dataset.hex)); };
+$('fonts').innerHTML = D.fonts.map(f => '<p><a href="' + f.url + '" target="_blank" rel="noopener" style="font-family:\'' + f.name + '\';font-size:24px;color:var(--ink)">' + esc(f.name) + '</a><br><span class="muted">' + esc(f.use) + '</span></p>').join('');
+
+/* grid tool */
+let img = null, count = 6, ratio = 4 / 3, tiles = [];
+const W = 1080;
+function seg(id, cb){ $(id).onclick = e => { const b = e.target.closest('button'); if (!b) return;
+  $(id).querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); cb(+b.dataset.v); render(); }; }
+seg('segCount', v => count = v);
+seg('segShape', v => ratio = v);
+$('showOrder').onchange = render; $('showOld').onchange = render;
+
+function load(f){
+  if (!f || !f.type.startsWith('image/')) return;
+  const r = new FileReader();
+  r.onload = () => { const i = new Image(); i.onload = () => { img = i; render(); }; i.src = r.result; };
+  r.readAsDataURL(f);
+}
+$('file').onchange = e => load(e.target.files[0]);
+const drop = $('drop');
+['dragenter','dragover'].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave','drop'].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e => load(e.dataTransfer.files[0]));
+
+function render(){
+  const rows = count / 3, H = Math.round(W * ratio), g = $('iggrid');
+  g.innerHTML = ''; tiles = [];
+  let sx = 0, sy = 0, sw = 0, sh = 0;
+  if (img) {
+    const target = (3 * W) / (rows * H), have = img.width / img.height;
+    if (have > target) { sh = img.height; sw = sh * target; sx = (img.width - sw) / 2; }
+    else { sw = img.width; sh = sw / target; sy = (img.height - sh) / 2; }
+  }
+  for (let r = 0; r < rows; r++) for (let c = 0; c < 3; c++) {
+    const t = document.createElement('div'); t.className = 'tile'; t.style.aspectRatio = W + '/' + H;
+    const order = count - (r * 3 + c);
+    if (img) {
+      const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+      const tw = sw / 3, th = sh / rows;
+      cv.getContext('2d').drawImage(img, sx + c * tw, sy + r * th, tw, th, 0, 0, W, H);
+      t.appendChild(cv); tiles.push({ cv, order });
+    }
+    if ($('showOrder').checked) { const o = document.createElement('span'); o.className = 'ord'; o.textContent = order; t.appendChild(o); }
+    g.appendChild(t);
+  }
+  if ($('showOld').checked) for (let i = 0; i < 6; i++) { const t = document.createElement('div'); t.className = 'tile old'; t.style.aspectRatio = W + '/' + H; g.appendChild(t); }
+  $('dlAll').disabled = !img;
+}
+render();
+
+$('dlAll').onclick = async () => {
+  const list = tiles.slice().sort((a, b) => a.order - b.order);
+  for (const t of list) {
+    const blob = await new Promise(r => t.cv.toBlob(r, 'image/jpeg', 0.95));
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'post-' + t.order + '-of-' + count + '.jpg';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    await new Promise(r => setTimeout(r, 350));
+  }
+  toast('Downloaded ' + list.length + ' posts');
+};
+</script>
+</body>
+</html>
