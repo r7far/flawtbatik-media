@@ -261,7 +261,10 @@ async function aSettings(){
   $('#ab').innerHTML = '<div class="card"><h3>Sheet bridge</h3><label>Bridge URL (Apps Script web app)</label><input id="bu" value="' + esc(s.bridge_url) + '"><label>Bridge token</label><input id="bt" type="password" placeholder="' + (s.bridge_token ? 'saved (type to change)' : 'not set') + '">' +
     '<h3 style="margin-top:16px">Site</h3><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="mm" style="width:auto"' + (s.maintenance === '1' ? ' checked' : '') + '> Maintenance mode (only admins can enter)</label>' +
     '<label>Phone alerts channel (ntfy, optional)</label><input id="nt" value="' + esc(s.ntfy) + '"><div class="row"><button class="btn" id="ok">Save</button></div></div>';
-  $('#ok').onclick = async () => { const b = {bridge_url:$('#bu').value, maintenance:$('#mm').checked ? '1' : '0', ntfy:$('#nt').value}; if ($('#bt').value) b.bridge_token = $('#bt').value;
+  $('#gt').onclick = async () => { if (!confirm('Make a new token? The old one stops working.')) return; const r = await api('/api/admin/token', {});
+    $('#tokbox').innerHTML = '<p class="small" style="margin:8px 0 4px">Copy it now and paste it in Apps Script › Project Settings › Script properties as <b>BRIDGE_TOKEN</b>. It is shown only once.</p><input readonly value="' + esc(r.token) + '" onclick="this.select()"><div class="row"><button class="btn ghost" id="cp">📋 Copy</button></div>';
+    $('#cp').onclick = () => navigator.clipboard.writeText(r.token).then(() => toast('Copied')); };
+  $('#ok').onclick = async () => { const b = {bridge_url:$('#bu').value, maintenance:$('#mm').checked ? '1' : '0', ntfy:$('#nt').value};
     try { await api('/api/admin/settings', b); toast('Saved'); } catch(e){ toast(e.message); } };
 }
 async function aLog(){

@@ -484,6 +484,12 @@ class H(BaseHTTPRequestHandler):
                         set_setting(k, str(b[k]).strip())
                 log(u['id'], 'settings changed')
                 return self.send(200, {'ok': True})
+            if p == '/api/admin/token' and method == 'POST':
+                # New bridge token, shown once so Rashad can paste it into the Apps Script properties.
+                tok = secrets.token_urlsafe(24)
+                set_setting('bridge_token', tok)
+                log(u['id'], 'new bridge token')
+                return self.send(200, {'ok': True, 'token': tok})
             if p == '/api/admin/log':
                 with db() as c:
                     rows = [dict(r) for r in c.execute('SELECT l.at,l.what,u.name FROM log l LEFT JOIN users u ON u.id=l.user_id ORDER BY l.id DESC LIMIT 300')]
