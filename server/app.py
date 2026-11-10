@@ -12,6 +12,7 @@ from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 PUBLIC = os.path.join(ROOT, 'public')
+TOOLS_DIR = os.path.dirname(ROOT)  # the tools site (repo root: index.html, data.js, assets/)
 DATA_DIR = os.environ.get('FTB_DATA', os.path.join(ROOT, 'data'))
 FILES = os.path.join(DATA_DIR, 'files')
 PORT = int(os.environ.get('FTB_PORT', '8090'))
@@ -298,6 +299,8 @@ class H(BaseHTTPRequestHandler):
                 return self.api('GET', p)
             if p.startswith('/files/'):
                 return self.file(p)
+            if p == '/tools' or p.startswith('/tools/'):
+                return self.tools(p)
             return self.static(p)
         except Exception as e:
             self.err(500, str(e))
@@ -310,6 +313,24 @@ class H(BaseHTTPRequestHandler):
             self.err(400, str(e))
         except Exception as e:
             self.err(500, str(e))
+
+    def tools(self, p):
+        # The tools site, served here too so it knows who is logged in. Team only.
+        if not self.user():
+            return self.send(302, {}, headers={'Location': '/'})
+        if p in ('/tools', '/tools/'):
+            if p == '/tools':
+                return self.send(302, {}, headers={'Location': '/tools/'})
+            p = '/tools/index.html'
+        rel = p[len('/tools/'):]
+        if not (rel in ('index.html', 'data.js') or rel.startswith('assets/')):
+            return self.err(404, 'Not found')
+        f = os.path.normpath(os.path.join(TOOLS_DIR, rel))
+        if not f.startswith(TOOLS_DIR + os.sep) or not os.path.isfile(f):
+            return self.err(404, 'Not found')
+        ctype = mimetypes.guess_type(f)[0] or 'application/octet-stream'
+        with open(f, 'rb') as fh:
+            self.send(200, ctype=ctype, body=fh.read())
 
     def static(self, p):
         if p in ('/', '') or not os.path.splitext(p)[1]:

@@ -27,6 +27,7 @@ nav{margin-inline-start:auto;display:flex;gap:4px;overflow-x:auto;scrollbar-widt
 nav::-webkit-scrollbar{display:none}
 nav a{text-decoration:none;color:var(--ink);font-weight:600;font-size:14px;padding:8px 12px;border-radius:999px;border:2px solid transparent;white-space:nowrap}
 nav a.on{background:var(--ink);color:var(--bg)}
+.teambtn[hidden]{display:none}
 .teambtn{flex:none;margin-left:6px;font-size:12px;font-weight:700;text-decoration:none;color:var(--bg);background:var(--ink);border-radius:999px;padding:6px 11px;white-space:nowrap}
 nav a:not(.on):hover{border-color:var(--ink)}
 main{padding:24px 16px 64px}
@@ -187,7 +188,7 @@ th{font-size:13px;color:var(--muted);font-weight:700}
     <a href="#brand" data-link="brand">Brand</a>
     <a href="#board" data-link="board">Board</a>
   </nav>
-  <a id="teamBtn" class="teambtn">👥 Team site</a>
+  <a id="teamBtn" class="teambtn" href="/" hidden>⚙️ Admin dashboard</a>
 </div></header>
 
 <main class="wrap">
@@ -600,11 +601,13 @@ $('fonts').innerHTML = D.fonts.map(f => '<p><a href="' + f.url + '" target="_bla
 
 /* ---------- board ---------- */
 $('lnFolder').href = D.links.folder;
-(() => { let back = new URLSearchParams(location.search).get('back');
-  try { if (back && /^https?:\/\//.test(back)) localStorage.setItem('ftbBack', back); else back = localStorage.getItem('ftbBack'); } catch (e) {}
-  const site = (back && /^https?:\/\//.test(back)) ? back : D.links.site;
-  $('teamBtn').href = site;
-  document.querySelectorAll('[data-site]').forEach(a => a.href = site); })();
+// On the team site (/tools/) show the admin button only to admins. On GitHub Pages it stays hidden.
+document.querySelectorAll('[data-site]').forEach(a => a.href = D.links.site);
+(async () => { if (!location.pathname.startsWith('/tools')) return;
+  document.querySelectorAll('[data-site]').forEach(a => { a.href = '/'; a.removeAttribute('target'); });
+  $('sheetLink').href = '/';
+  try { const me = await fetch('/api/me').then(r => r.json());
+    if (me.user && me.user.role === 'admin' && !me.preview_by) { const b = $('teamBtn'); b.href = '/?admin=1'; b.hidden = false; } } catch (e) {} })();
 document.querySelectorAll('[data-board]').forEach(a => a.href = D.links.board + '#gid=' + a.dataset.board);
 
 render(); route();

@@ -84,8 +84,9 @@ async function api(path, body){
   if (!r.ok) throw new Error(j.error || ('Error ' + r.status));
   return j;
 }
-const TOOLS = 'https://r7far.github.io/flawtbatik-media/';
-let ME = null, VIEW = 'tasks', AT = 'team';
+const TOOLS = '/tools/';
+let ME = null, VIEW = new URLSearchParams(location.search).get('admin') ? 'admin' : 'tasks', AT = 'team';
+if (location.search) history.replaceState(null, '', location.pathname);
 setInterval(() => { if (ME && !document.hidden) fetch('/api/me').catch(() => {}); }, 60000);
 const today = () => new Date(new Date().toLocaleDateString('en-CA', {timeZone:'Asia/Riyadh'}) + 'T00:00:00Z');
 const left = d => d ? Math.round((new Date(d + 'T00:00:00Z') - today()) / 864e5) : null;
@@ -118,6 +119,7 @@ async function boot(){
   if (me.setup) return setupView();
   if (!ME) return loginView();
   if (me.maintenance && ME.role !== 'admin') { app.innerHTML = '<div class="card center"><h3>🛠️ Maintenance</h3><p>The site is closed for a short time.</p></div>'; return; }
+  if (VIEW === 'admin' && ME.role !== 'admin') VIEW = 'tasks';
   drawNav(); show(VIEW);
 }
 function drawNav(){
@@ -127,7 +129,7 @@ function drawNav(){
   $('#nav').innerHTML = items.map(([k, l]) => '<a data-v="' + k + '" class="' + (k === VIEW ? 'on' : '') + '">' + esc(l) + '</a>').join('');
   const adm = $('#adm'); adm.hidden = ME.role !== 'admin'; adm.classList.toggle('on', VIEW === 'admin');
   adm.onclick = () => { VIEW = 'admin'; drawNav(); show(VIEW); };
-  $('#nav').onclick = e => { const a = e.target.closest('a'); if (!a) return; if (a.dataset.v === 'tools') { location.href = TOOLS + '?back=' + encodeURIComponent(location.origin) + '#home'; return; } VIEW = a.dataset.v; drawNav(); show(VIEW); };
+  $('#nav').onclick = e => { const a = e.target.closest('a'); if (!a) return; if (a.dataset.v === 'tools') { location.href = TOOLS + '#home'; return; } VIEW = a.dataset.v; drawNav(); show(VIEW); };
 }
 function show(v){ ({tasks:tasksView, review:reviewView, team:teamView, admin:adminView, me:meView})[v](); window.scrollTo(0,0); }
 
