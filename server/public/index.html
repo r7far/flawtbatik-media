@@ -127,7 +127,7 @@ function drawNav(){
   $('#nav').innerHTML = items.map(([k, l]) => '<a data-v="' + k + '" class="' + (k === VIEW ? 'on' : '') + '">' + esc(l) + '</a>').join('');
   const adm = $('#adm'); adm.hidden = ME.role !== 'admin'; adm.classList.toggle('on', VIEW === 'admin');
   adm.onclick = () => { VIEW = 'admin'; drawNav(); show(VIEW); };
-  $('#nav').onclick = e => { const a = e.target.closest('a'); if (!a) return; if (a.dataset.v === 'tools') return window.open(TOOLS, '_blank'); VIEW = a.dataset.v; drawNav(); show(VIEW); };
+  $('#nav').onclick = e => { const a = e.target.closest('a'); if (!a) return; if (a.dataset.v === 'tools') { location.href = TOOLS + '?back=' + encodeURIComponent(location.origin) + '#home'; return; } VIEW = a.dataset.v; drawNav(); show(VIEW); };
 }
 function show(v){ ({tasks:tasksView, review:reviewView, team:teamView, admin:adminView, me:meView})[v](); window.scrollTo(0,0); }
 
