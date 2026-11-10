@@ -210,7 +210,7 @@ th{font-size:13px;color:var(--muted);font-weight:700}
     <h2 id="weekTitle"></h2>
     <ul class="tasks" id="tasks"></ul>
     <div class="note">👀 <span id="headNote"></span></div>
-    <p class="muted small" style="margin:14px 0 0">When you finish a task, change its status in the <a id="sheetLink" target="_blank" rel="noopener">media tasks sheet</a> to ✅ Finished.</p>
+    <p class="muted small" style="margin:14px 0 0">When you finish a task, submit it on the <a id="sheetLink" target="_blank" rel="noopener">team site</a>.</p>
   </div>
 
   <div class="tiles">
@@ -219,7 +219,7 @@ th{font-size:13px;color:var(--muted);font-weight:700}
     <a class="tilelink" href="#captions"><b>✍️ Captions</b><span>Templates, hashtags, checklist</span></a>
     <a class="tilelink" href="#event"><b>🏆 Event</b><span>Tournaments, team, shot list</span></a>
     <a class="tilelink" href="#brand"><b>🎨 Brand Kit</b><span>Logo, colors, fonts</span></a>
-    <a class="tilelink" href="#board"><b>📁 Board</b><span>Files, ideas, approvals</span></a>
+    <a class="tilelink" href="#board"><b>📁 Board</b><span>Files, ideas, calendar</span></a>
   </div>
 </section>
 
@@ -390,16 +390,16 @@ th{font-size:13px;color:var(--muted);font-weight:700}
 <!-- ============ BOARD ============ -->
 <section data-page="board">
   <h2>Board</h2>
-  <p class="lead">Where the team shares files, ideas and approvals.</p>
+  <p class="lead">Where the team shares files, ideas and the content plan.</p>
   <div class="card">
-    <div class="boardrow"><div class="ic">📁</div><div><b>Media Files</b> <span class="muted small">(Google Drive folder)</span><p class="muted small" style="margin:2px 0 8px">Put every design, photo and video here. Then use its link in Approvals.</p><a class="btn sm" id="lnFolder" target="_blank" rel="noopener">Open folder</a></div></div>
-    <div class="boardrow"><div class="ic">💡</div><div><b>Ideas Box</b><p class="muted small" style="margin:2px 0 8px">Write your own ideas any time. We choose together in the meeting.</p><a class="btn sm" data-board target="_blank" rel="noopener">Open Media Board → Ideas</a></div></div>
-    <div class="boardrow"><div class="ic">✅</div><div><b>Approvals</b><p class="muted small" style="margin:2px 0 8px">Add the design link and the caption. Suhad and Rashad mark it ✅ Approved or ✏️ Changes. Post only after ✅.</p><a class="btn sm" data-board target="_blank" rel="noopener">Open Media Board → Approvals</a></div></div>
-    <div class="boardrow"><div class="ic">🗓️</div><div><b>Content Calendar</b><p class="muted small" style="margin:2px 0 8px">What goes out and when. Suhad fills it from the media plan.</p><a class="btn sm" data-board target="_blank" rel="noopener">Open Media Board → Content Calendar</a></div></div>
-    <div class="boardrow"><div class="ic">🎥</div><div><b>Event coverage</b><p class="muted small" style="margin:2px 0 8px">Who films and who posts stories on 24 and 25 Dec.</p><a class="btn sm" data-board target="_blank" rel="noopener">Open Media Board → Coverage</a></div></div>
-    <div class="boardrow"><div class="ic">📋</div><div><b>This week's tasks</b><p class="muted small" style="margin:2px 0 8px">Change your status when you finish.</p><a class="btn sm" id="lnSheet" target="_blank" rel="noopener">Open tasks sheet</a></div></div>
+    <div class="boardrow"><div class="ic">📁</div><div><b>Media Files</b> <span class="muted small">(Google Drive folder)</span><p class="muted small" style="margin:2px 0 8px">Put every design, photo and video here. Then send the link with your task on the team site.</p><a class="btn sm" id="lnFolder" target="_blank" rel="noopener">Open folder</a></div></div>
+    <div class="boardrow"><div class="ic">💡</div><div><b>Ideas Box</b><p class="muted small" style="margin:2px 0 8px">Write your own ideas any time. We choose together in the meeting.</p><a class="btn sm" data-board="0" target="_blank" rel="noopener">Open Ideas</a></div></div>
+    <div class="boardrow"><div class="ic">✅</div><div><b>Approvals</b><p class="muted small" style="margin:2px 0 8px">Submit your design and caption on the team site. Suhad and Rashad mark it ✅ Approve or ✏️ Changes. Post only after ✅.</p><a class="btn sm" data-site target="_blank" rel="noopener">Open team site</a></div></div>
+    <div class="boardrow"><div class="ic">🗓️</div><div><b>Content Calendar</b><p class="muted small" style="margin:2px 0 8px">What goes out and when. Suhad fills it from the media plan.</p><a class="btn sm" data-board="490975183" target="_blank" rel="noopener">Open Content Calendar</a></div></div>
+    <div class="boardrow"><div class="ic">🎥</div><div><b>Event coverage</b><p class="muted small" style="margin:2px 0 8px">Who films and who posts stories on 24 and 25 Dec.</p><a class="btn sm" data-board="815651965" target="_blank" rel="noopener">Open Coverage</a></div></div>
+    <div class="boardrow"><div class="ic">📋</div><div><b>My tasks</b><p class="muted small" style="margin:2px 0 8px">Log in to the team site to see your tasks, start them and submit your work.</p><a class="btn sm" data-site target="_blank" rel="noopener">Open my tasks</a></div></div>
   </div>
-  <p class="muted small" style="margin-top:12px">💡 The Media Board has one tab for each part: Ideas, Approvals, Content Calendar, Coverage. Switch tabs at the bottom of the sheet.</p>
+  <p class="muted small" style="margin-top:12px">💡 The Media Board has one tab for each part: Ideas, Content Calendar, Coverage. Switch tabs at the bottom of the sheet.</p>
 </section>
 
 </main>
@@ -451,7 +451,7 @@ $('tasks').innerHTML = w.tasks.map(t => {
     '<div><div class="t">' + esc(t.en) + '</div><div class="ar">' + esc(t.ar) + '</div><div class="muted" style="font-size:13px">' + esc(t.who) + '</div></div>' + pill + '</li>';
 }).join('');
 $('headNote').textContent = D.head;
-$('sheetLink').href = D.links.sheet;
+$('sheetLink').href = D.links.site;
 
 /* ---------- grid ---------- */
 let img = null, count = 6, ratio = 4 / 3, tiles = [];
@@ -597,8 +597,9 @@ $('swatches').onclick = e => { const b = e.target.closest('.sw'); if (b) copy(b.
 $('fonts').innerHTML = D.fonts.map(f => '<p><a href="' + f.url + '" target="_blank" rel="noopener" style="font-family:\'' + f.name + '\';font-size:24px;color:var(--ink)">' + esc(f.name) + '</a><br><span class="muted">' + esc(f.use) + '</span></p>').join('');
 
 /* ---------- board ---------- */
-$('lnFolder').href = D.links.folder; $('lnSheet').href = D.links.sheet;
-document.querySelectorAll('[data-board]').forEach(a => a.href = D.links.board);
+$('lnFolder').href = D.links.folder;
+document.querySelectorAll('[data-board]').forEach(a => a.href = D.links.board + '#gid=' + a.dataset.board);
+document.querySelectorAll('[data-site]').forEach(a => a.href = D.links.site);
 
 render(); route();
 </script>

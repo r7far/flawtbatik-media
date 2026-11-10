@@ -26,9 +26,10 @@ window.FTB = {
   ],
 
   links: {
-    sheet: "https://docs.google.com/spreadsheets/d/1BNeiNM-ZyXTPEIJnDDJlA3dNZR-PrOfGQokb1Qia6FY/edit",
+    // Team site (login). Changes if the Raspberry Pi restarts, until we have the domain.
+    site: "https://regards-replica-jose-resulted.trycloudflare.com",
     folder: "https://drive.google.com/drive/folders/1goJaC8B4k2qjFOvUWZGO7qzfKalFgDZf",
-    board: "https://docs.google.com/spreadsheets/d/12aNntFQ5hwVH1juBkOwy9ge9vWfIwfXp/edit"
+    board: "https://docs.google.com/spreadsheets/d/1rTeLFqZ5egLDAD7Q1qO7i3BTFxZuWr6crnAQ19chiS0/edit"
   },
 
   weeks: [
@@ -55,7 +56,7 @@ window.FTB = {
     "Logo is on the design",
     "Spelling checked (Arabic and English)",
     "No prices unless Rashad confirmed them",
-    "Suhad approved it (Media Board > Approvals)",
+    "Suhad approved it on the team site (✅ Approve)",
     "Grid order is right (post 1 first)"
   ],
   dmReplies: [
