@@ -80,17 +80,22 @@ window.FTB = {
   ],
 
   // ---------- Brand ----------
+  // Official brand guideline from Roua (Brand Identity Guidelines v1.0, Nov 2026)
   colors: [
-    { name: "Slate", hex: "#7F99A8" },
-    { name: "Deep", hex: "#4F6877" },
-    { name: "Cream", hex: "#E6DCC0" },
-    { name: "Paper", hex: "#F6F2E6" },
-    { name: "Black", hex: "#0B0B0B" }
+    { name: "Primary Blue", hex: "#1085BB" },
+    { name: "Warm Cream", hex: "#E2D9BD" },
+    { name: "Black", hex: "#000000" },
+    { name: "White", hex: "#FFFFFF" }
   ],
   fonts: [
-    { name: "Lalezar", use: "Big Arabic titles", url: "https://fonts.google.com/specimen/Lalezar" },
-    { name: "IBM Plex Sans Arabic", use: "Body text, Arabic and English", url: "https://fonts.google.com/specimen/IBM+Plex+Sans+Arabic" }
+    { name: "Impact", use: "English: headlines and short emphasis", url: "https://learn.microsoft.com/typography/font-list/impact" },
+    { name: "Farah", use: "Arabic: the approved Arabic typeface. Check it is installed and the Arabic shows right before you export", url: "" }
   ],
+  logoRules: {
+    do: ["Use the supplied logo only. Do not redraw, rearrange, separate or replace its lettering.", "Keep empty space around the logo: at least 10% of the logo width on every side.", "Scale it proportionally and keep all parts together.", "Use a high-resolution file, on a clean, high-contrast background.", "Keep the original logo colors. Do not recolor it to match the design."],
+    avoid: ["Stretching or squashing it.", "Cropping the decorative strokes.", "Putting other things too close to it.", "Using it too small to read."]
+  },
+  brandWords: "Bringing people together through fun and creativity. Playful · Energetic · Welcoming · Creative · Connected · Memorable",
   sizes: [
     { name: "Post (portrait)", px: "1080 × 1350", note: "Most posts" },
     { name: "Post (profile grid)", px: "1080 × 1440", note: "3:4, matches the profile grid" },

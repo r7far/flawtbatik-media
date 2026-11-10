@@ -12,7 +12,7 @@
 <style>
 :root{
   --bg:#F6F2E6; --surface:#FFFFFF; --ink:#0B0B0B; --muted:#5A656B; --line:#D5CFBD;
-  --slate:#7F99A8; --deep:#4F6877; --cream:#E6DCC0; --red:#C8463D; --amber:#B7791F; --green:#2F7D4F;
+  --slate:#1085BB; --deep:#0B6A96; --cream:#E2D9BD; --red:#C8463D; --amber:#B7791F; --green:#2F7D4F;
   --r:18px;
 }
 *{box-sizing:border-box}
@@ -377,7 +377,7 @@ th{font-size:13px;color:var(--muted);font-weight:700}
 <!-- ============ BRAND ============ -->
 <section data-page="brand">
   <h2>Brand Kit</h2>
-  <details class="guide" open><summary>ℹ️ What is this page? <span class="ar">وش هذي الصفحة؟</span></summary><p>The logo, colors, fonts and the right way to write the date and place, so every post looks the same.</p><ol><li>Download the logo from here only.</li><li>Tap a color to copy its code.</li><li>Always write the date and place exactly like this. Never use the old dates in red.</li></ol><p class="ar" dir="rtl">الشعار والألوان والخطوط، وطريقة كتابة التاريخ والمكان. الألوان الحالية مؤقتة لين يوصل البراند كيت الرسمي من رؤى.</p></details>
+  <details class="guide" open><summary>ℹ️ What is this page? <span class="ar">وش هذي الصفحة؟</span></summary><p>The logo, colors, fonts and the right way to write the date and place, so every post looks the same.</p><ol><li>Download the logo from here only.</li><li>Tap a color to copy its code.</li><li>Always write the date and place exactly like this. Never use the old dates in red.</li></ol><p class="ar" dir="rtl">الشعار والألوان والخطوط الرسمية من البراند كيت حق رؤى، وقواعد الشعار، وطريقة كتابة التاريخ والمكان.</p></details>
   
   <div class="two">
     <div class="card logo-box">
@@ -394,12 +394,17 @@ th{font-size:13px;color:var(--muted);font-weight:700}
       <div class="wrong" id="wrong"></div>
     </div>
     <div class="card full">
-      <b>Colors</b> <span class="muted small">(tap to copy · temporary until the official brand kit from Roua)</span>
+      <b>Official colors</b> <span class="muted small">(tap to copy · from the brand guideline)</span>
       <div class="swatches" id="swatches"></div>
     </div>
     <div class="card full">
-      <b>Fonts</b>
+      <b>Official fonts</b>
       <div id="fonts"></div>
+    </div>
+    <div class="card full">
+      <b>Logo rules</b> <span class="muted small">(from the brand guideline)</span>
+      <div class="two" style="margin-top:8px"><div><b>✅ Do</b><ul id="logoDo"></ul></div><div><b>❌ Avoid</b><ul id="logoAvoid"></ul></div></div>
+      <p class="muted small" id="brandWords"></p>
     </div>
   </div>
 </section>
@@ -512,7 +517,8 @@ $('dlAll').onclick = async () => {
 
 /* ---------- studio: countdown story ---------- */
 const logo = new Image(); logo.src = 'assets/logo.jpeg'; logo.onload = () => drawStory();
-const BGS = [{ c: '#4F6877', t: '#FFFFFF', a: '#E6DCC0' }, { c: '#7F99A8', t: '#0B0B0B', a: '#FFFFFF' }, { c: '#0B0B0B', t: '#F3EEDD', a: '#7F99A8' }, { c: '#E6DCC0', t: '#0B0B0B', a: '#4F6877' }];
+// Official brand colors: Primary Blue, Warm Cream, Black, White
+const BGS = [{ c: '#1085BB', t: '#FFFFFF', a: '#E2D9BD' }, { c: '#E2D9BD', t: '#000000', a: '#1085BB' }, { c: '#000000', t: '#FFFFFF', a: '#1085BB' }, { c: '#FFFFFF', t: '#000000', a: '#1085BB' }];
 let cdBg = 0, cdLang = 'both';
 $('cdDays').value = DAYS;
 $('cdBg').innerHTML = BGS.map((b, i) => '<button style="background:' + b.c + '" data-i="' + i + '" class="' + (i ? '' : 'on') + '" aria-label="Background ' + b.c + '"></button>').join('');
@@ -531,7 +537,7 @@ async function drawStory(){
     x.save(); roundRect(x, 0, 540 - lw / 2 - 30, 300 - 30, lw + 60, lh + 60, 40); x.fillStyle = '#fff'; x.fill(); x.lineWidth = 8; x.strokeStyle = '#0B0B0B'; x.stroke(); x.restore();
     x.drawImage(logo, 540 - lw / 2, 300, lw, lh); }
   x.textAlign = 'center'; x.fillStyle = B.t;
-  x.font = '400 ' + (n > 99 ? 400 : 520) + 'px Lalezar, sans-serif'; x.fillText(String(n), 540, 1240);
+  x.font = '400 ' + (n > 99 ? 400 : 520) + 'px Impact, Lalezar, sans-serif'; x.fillText(String(n), 540, 1240);
   const line1 = cdLang === 'en' ? (n === 1 ? 'DAY TO GO' : 'DAYS TO GO') : 'يوم باقي', line2 = cdLang === 'both' ? (n === 1 ? 'DAY TO GO' : 'DAYS TO GO') : '';
   x.font = '400 110px Lalezar, sans-serif'; x.fillText(line1, 540, 1380);
   if (line2) { x.font = '700 64px "IBM Plex Sans Arabic", sans-serif'; x.fillText(line2, 540, 1470); }
@@ -610,9 +616,10 @@ drawShots();
 $('bDates').textContent = E.datesEn; $('bDatesAr').textContent = E.datesAr;
 $('bPlace').textContent = E.placeEn; $('bPlaceAr').textContent = E.placeAr;
 $('wrong').innerHTML = D.wrongDates.map(x => '<s>' + esc(x) + '</s>').join('');
+if (D.logoRules) { $('logoDo').innerHTML = D.logoRules.do.map(x => '<li>' + esc(x) + '</li>').join(''); $('logoAvoid').innerHTML = D.logoRules.avoid.map(x => '<li>' + esc(x) + '</li>').join(''); $('brandWords').textContent = D.brandWords || ''; }
 $('swatches').innerHTML = D.colors.map(c => '<button class="sw" data-hex="' + c.hex + '"><i style="background:' + c.hex + '"></i><span><b>' + esc(c.name) + '</b>' + c.hex + '</span></button>').join('');
 $('swatches').onclick = e => { const b = e.target.closest('.sw'); if (b) copy(b.dataset.hex, 'Copied ' + b.dataset.hex); };
-$('fonts').innerHTML = D.fonts.map(f => '<p><a href="' + f.url + '" target="_blank" rel="noopener" style="font-family:\'' + f.name + '\';font-size:24px;color:var(--ink)">' + esc(f.name) + '</a><br><span class="muted">' + esc(f.use) + '</span></p>').join('');
+$('fonts').innerHTML = D.fonts.map(f => '<p><a ' + (f.url ? 'href="' + f.url + '" target="_blank" rel="noopener" ' : '') + 'style="font-family:\'' + f.name + '\';font-size:24px;color:var(--ink)">' + esc(f.name) + '</a><br><span class="muted">' + esc(f.use) + '</span></p>').join('');
 
 /* ---------- board ---------- */
 $('lnFolder').href = D.links.folder;
