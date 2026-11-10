@@ -102,6 +102,11 @@ function statusPill(t){
   return '<span class="pill' + (l <= 2 ? ' soon' : '') + '">' + l + (l === 1 ? ' day' : ' days') + ' left</span>';
 }
 
+function ownsTask(t){
+  const o = String(t.owner || '').toLowerCase(); if (!o) return false;
+  if (/everyone|all media|الكل/.test(o)) return true;
+  return String(ME.sheet_name || ME.name).toLowerCase().split(',').map(n => n.trim()).filter(Boolean).some(n => o.includes(n) || o.split(/[^a-z\u0600-\u06ff]+/).includes(n.split(' ')[0]));
+}
 async function boot(){
   const inv = location.pathname.match(/^\/invite\/([\w-]+)/);
   if (inv) return inviteView(inv[1]);
@@ -183,7 +188,7 @@ async function tasksView(){
   if (!list.length) h += '<div class="card">No tasks yet for you this week. 🎉</div>';
   byWeek(list).forEach(([w, ts]) => {
     const pubNote = ME.role === 'admin' && !ts[0].published ? ' <span class="pill soon">Hidden from the team</span>' : '';
-    h += '<div class="week">Week ' + w + ' –' + pubNote + '</div>' + ts.map(t => taskCard(t, {mine: mine || /rashad/i.test(t.owner) && ME.role === 'admin', showOwner: !mine, review: !mine && ME.role !== 'viewer'})).join('');
+    h += '<div class="week">Week ' + w + ' –' + pubNote + '</div>' + ts.map(t => taskCard(t, {mine: mine || ownsTask(t), showOwner: !mine, review: !mine && ME.role !== 'viewer'})).join('');
   });
   app.innerHTML = h; bindTaskActions();
 }
