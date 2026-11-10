@@ -50,6 +50,9 @@ def init_db():
         cols = [r['name'] for r in c.execute('PRAGMA table_info(users)')]
         if 'invite' not in cols:
             c.execute('ALTER TABLE users ADD COLUMN invite TEXT')
+        for col in ('last_seen REAL', 'last_login TEXT', 'last_tasks REAL'):
+            if col.split()[0] not in cols:
+                c.execute('ALTER TABLE users ADD COLUMN ' + col)
 
 
 # ---------- helpers ----------
@@ -251,6 +254,8 @@ class H(BaseHTTPRequestHandler):
             return None
         with db() as c:
             r = c.execute('SELECT u.* FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token=? AND u.active=1', (tok,)).fetchone()
+            if r and time.time() - (r['last_seen'] or 0) > 20:
+                c.execute('UPDATE users SET last_seen=? WHERE id=?', (time.time(), r['id']))
         return r
 
     def need(self, *roles):
@@ -329,6 +334,8 @@ class H(BaseHTTPRequestHandler):
             tok = secrets.token_urlsafe(32)
             with db() as c:
                 c.execute('INSERT INTO sessions VALUES(?,?,?)', (tok, u['id'], time.time()))
+            with db() as c:
+                c.execute('UPDATE users SET last_login=?, last_seen=? WHERE id=?', (now_iso(), time.time(), u['id']))
             log(u['id'], 'logged in')
             secure = '; Secure' if self.headers.get('X-Forwarded-Proto') == 'https' else ''
             return self.send(200, {'ok': True, 'user': user_public(u)},
@@ -389,6 +396,8 @@ class H(BaseHTTPRequestHandler):
                 tasks = [dict(r) for r in c.execute('SELECT * FROM tasks ORDER BY week, due, row')]
                 pub = {r['n']: r['published'] for r in c.execute('SELECT * FROM weeks')}
                 subs = [dict(r) for r in c.execute('SELECT s.*, u.name AS by_name FROM subs s LEFT JOIN users u ON u.id=s.user_id ORDER BY s.id')]
+            with db() as c:
+                c.execute('UPDATE users SET last_tasks=? WHERE id=?', (time.time(), u['id']))
             if u['role'] != 'admin':
                 tasks = [t for t in tasks if pub.get(t['week'])]
             if u['role'] == 'member':
@@ -531,6 +540,34 @@ class H(BaseHTTPRequestHandler):
                 set_setting('bridge_token', tok)
                 log(u['id'], 'new bridge token')
                 return self.send(200, {'ok': True, 'token': tok})
+            if p == '/api/admin/team':
+                now = time.time()
+                with db() as c:
+                    users = [dict(r) for r in c.execute("SELECT * FROM users WHERE active=1 AND role!='admin' ORDER BY id")]
+                    tasks = [dict(r) for r in c.execute('SELECT * FROM tasks ORDER BY week, due, row')]
+                    pub = {r['n']: r['published'] for r in c.execute('SELECT * FROM weeks')}
+                    subs = [dict(r) for r in c.execute('SELECT task_key, user_id, created, review FROM subs ORDER BY id')]
+                    last = {r['user_id']: (r['at'], r['what']) for r in c.execute(
+                        'SELECT user_id, at, what FROM log WHERE id IN (SELECT MAX(id) FROM log GROUP BY user_id)')}
+                tasks = [t for t in tasks if pub.get(t['week'])]
+                out = []
+                for x in users:
+                    mine = [t for t in tasks if is_mine(t, x)]
+                    tl = []
+                    for t in mine:
+                        ss = [q for q in subs if q['task_key'] == t['key'] and q['user_id'] == x['id']]
+                        tl.append({'task': t['task'], 'week': t['week'], 'due': t['due'] or t['timing'],
+                                   'status': t['status'] or 'Not Started',
+                                   'submitted': ss[-1]['created'] if ss else ''})
+                    seen = x['last_seen'] or 0
+                    out.append({'id': x['id'], 'name': x['name'], 'role': x['role'],
+                                'joined': not x['invite'] and bool(x['pw']),
+                                'online': now - seen < 150, 'seen_ago': int(now - seen) if seen else None,
+                                'last_login': x['last_login'] or '',
+                                'tasks_ago': int(now - x['last_tasks']) if x['last_tasks'] else None,
+                                'last_action': last.get(x['id'], ('', ''))[1], 'last_action_at': last.get(x['id'], ('', ''))[0],
+                                'tasks': tl})
+                return self.send(200, {'team': out})
             if p == '/api/admin/log':
                 with db() as c:
                     rows = [dict(r) for r in c.execute('SELECT l.at,l.what,u.name FROM log l LEFT JOIN users u ON u.id=l.user_id ORDER BY l.id DESC LIMIT 300')]
