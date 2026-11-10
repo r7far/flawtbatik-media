@@ -2,7 +2,7 @@
 // Fla w Tbatik – Media site data
 // Every week: add a new week at the TOP of `weeks`. Only the first
 // week in the list is shown on the home page.
-// Only put things here that can be public (this site is public).
+// Only public things here. Private team info is in local.js on the Raspberry Pi.
 // ================================================================
 window.FTB = {
   event: {
@@ -17,20 +17,10 @@ window.FTB = {
     placeAr: "مركز حي المحمدية، جدة"
   },
 
-  head: "Suhad Shami (Head of Media) checks that everyone finishes their tasks.",
-
-  team: [
-    { name: "Suhad Shami", role: "Head of Media", job: "Checks every task is done on time. Makes the media plan. Approves posts." },
-    { name: "Mohammed Alshahrani", role: "Deputy Head", job: "Media team member." },
-    { name: "Jana Mohamed", role: "Deputy Head", job: "Media team member." }
-  ],
-
-  links: {
-    // Team site (login). Changes if the Raspberry Pi restarts, until we have the domain.
-    site: "https://regards-replica-jose-resulted.trycloudflare.com",
-    folder: "https://drive.google.com/drive/folders/1goJaC8B4k2qjFOvUWZGO7qzfKalFgDZf",
-    board: "https://docs.google.com/spreadsheets/d/1rTeLFqZ5egLDAD7Q1qO7i3BTFxZuWr6crnAQ19chiS0/edit"
-  },
+  // Team names and links are private: the team site adds them from local.js.
+  head: "",
+  team: [],
+  links: { site: "/", folder: "", board: "" },
 
   weeks: [
     {

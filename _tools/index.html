@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Fla w Tbatik – Media</title>
+<link rel="icon" href="assets/logo.jpeg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Lalezar&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F6F2E6; --surface:#FFFFFF; --ink:#0B0B0B; --muted:#5A656B; --line:#D5CFBD;
+  --slate:#7F99A8; --deep:#4F6877; --cream:#E6DCC0; --red:#C8463D; --amber:#B7791F; --green:#2F7D4F;
+  --r:18px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;font-size:16px;line-height:1.5}
+a{color:var(--deep)}
+.wrap{max-width:1000px;margin:0 auto;padding:0 16px}
+header{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:2px solid var(--ink)}
+.bar{display:flex;align-items:center;gap:12px;height:64px}
+.bar img{height:44px;width:auto;border-radius:10px;background:#fff;border:2px solid var(--ink);flex:none}
+nav{margin-inline-start:auto;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;min-width:0}
+nav::-webkit-scrollbar{display:none}
+nav a{text-decoration:none;color:var(--ink);font-weight:600;font-size:14px;padding:8px 12px;border-radius:999px;border:2px solid transparent;white-space:nowrap}
+.guide{background:#fff;border:2px solid var(--ink);border-radius:16px;padding:12px 16px;margin:6px 0 16px;font-size:14px;line-height:1.6}
+.guide summary{cursor:pointer;font-weight:700;list-style:none}
+.guide summary::-webkit-details-marker{display:none}
+.guide summary .ar{font-weight:400;opacity:.7;margin-left:6px}
+.guide ol{margin:8px 0;padding-left:20px}
+.guide p{margin:6px 0}
+.guide p.ar{opacity:.8}
+nav a.on{background:var(--ink);color:var(--bg)}
+.teambtn[hidden]{display:none}
+.teambtn{flex:none;margin-left:6px;font-size:12px;font-weight:700;text-decoration:none;color:var(--bg);background:var(--ink);border-radius:999px;padding:6px 11px;white-space:nowrap}
+nav a:not(.on):hover{border-color:var(--ink)}
+main{padding:24px 16px 64px}
+section[data-page]{display:none}
+section[data-page].on{display:block}
+h1,h2,h3{font-family:Lalezar,sans-serif;font-weight:400;line-height:1.1;margin:0}
+h1{font-size:clamp(38px,8vw,64px)}
+h2{font-size:32px}
+h3{font-size:24px;margin-bottom:6px}
+.lead{color:var(--muted);margin:6px 0 20px}
+.ar{direction:rtl;unicode-bidi:isolate;color:var(--muted);font-size:15px;text-align:left}
+.card{background:var(--surface);border:2px solid var(--ink);border-radius:var(--r);box-shadow:4px 4px 0 var(--ink);padding:20px}
+.stack{display:grid;gap:20px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+.btn{display:inline-flex;align-items:center;gap:8px;font:inherit;font-weight:700;font-size:15px;padding:10px 16px;border-radius:999px;border:2px solid var(--ink);background:var(--slate);color:var(--ink);cursor:pointer;text-decoration:none;box-shadow:3px 3px 0 var(--ink)}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.btn.ghost{background:var(--surface)}
+.btn.sm{font-size:13px;padding:6px 12px;box-shadow:2px 2px 0 var(--ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+input[type=text],input[type=url],input[type=number],textarea,select{font:inherit;width:100%;padding:10px 12px;border:2px solid var(--ink);border-radius:12px;background:var(--surface);color:var(--ink)}
+textarea{min-height:200px;resize:vertical}
+label.lbl{display:block;font-weight:700;margin:14px 0 8px}
+.seg{display:flex;border:2px solid var(--ink);border-radius:999px;overflow:hidden}
+.seg button{flex:1;font:inherit;font-weight:700;font-size:14px;padding:9px 6px;border:0;background:var(--surface);cursor:pointer;color:var(--ink)}
+.seg button+button{border-inline-start:2px solid var(--ink)}
+.seg button.on{background:var(--ink);color:#fff}
+.tip{font-size:14px;margin-top:16px;padding:12px;border-radius:12px;background:var(--cream)}
+.pill{font-size:13px;font-weight:700;padding:4px 10px;border-radius:999px;border:2px solid var(--ink);white-space:nowrap;background:var(--surface)}
+.pill.soon{background:#FFF1CF;color:var(--amber);border-color:var(--amber)}
+.pill.late{background:#FBE1DE;color:var(--red);border-color:var(--red)}
+.pill.today{background:var(--ink);color:#fff}
+.pill.tba{background:var(--cream);border-color:var(--cream)}
+
+/* home */
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:20px;margin-bottom:24px}
+.hero .facts p{margin:6px 0}
+.count{background:var(--deep);color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.count .n{font-family:Lalezar,sans-serif;font-size:84px;line-height:1}
+.week h2{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.week h2 small{font-family:"IBM Plex Sans Arabic";font-size:15px;color:var(--muted)}
+.tasks{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:10px}
+.task{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:14px 16px;border:2px solid var(--ink);border-radius:14px;background:var(--bg)}
+.task .d{font-weight:700;text-align:center;min-width:64px;font-size:14px;line-height:1.2}
+.task .d span{display:block;font-family:Lalezar;font-size:26px;font-weight:400}
+.task .t{font-weight:700}
+.note{margin-top:16px;padding:12px 14px;border-radius:12px;background:var(--cream);font-weight:600}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:24px}
+.tilelink{display:block;text-decoration:none;color:var(--ink);border:2px solid var(--ink);border-radius:14px;padding:14px;background:var(--surface)}
+.tilelink b{display:block;font-size:16px}
+.tilelink span{font-size:13px;color:var(--muted)}
+.tilelink:hover{background:var(--cream)}
+
+/* grid tool */
+.tool{display:grid;grid-template-columns:330px 1fr;gap:20px;align-items:start}
+.drop{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;border:2px dashed var(--ink);border-radius:14px;padding:22px 12px;cursor:pointer;background:var(--bg)}
+.drop.over{background:var(--cream)}
+.drop input{display:none}
+.toggle{display:flex;align-items:center;gap:8px;margin-top:14px;font-weight:600;cursor:pointer}
+.toggle input,.check input{width:20px;height:20px;accent-color:var(--deep);flex:none}
+.phone{max-width:420px;margin:0 auto;background:#fff;border:2px solid var(--ink);border-radius:28px;box-shadow:4px 4px 0 var(--ink);overflow:hidden}
+.ighead{display:flex;align-items:center;gap:14px;padding:16px}
+.ighead img{width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid var(--line)}
+.ighead b{display:block}
+.ighead .stats{font-size:13px;color:var(--muted)}
+.igtabs{border-top:1px solid #e4e4e4;display:flex;justify-content:center;padding:8px 0;font-size:12px;font-weight:700;letter-spacing:1px}
+.iggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:#fff}
+.tile{position:relative;background:#e9e9e9;overflow:hidden}
+.tile canvas{display:block;width:100%;height:100%}
+.tile.old{background:repeating-linear-gradient(45deg,#ececec 0 10px,#e2e2e2 10px 20px)}
+.tile .ord{position:absolute;top:6px;left:6px;background:rgba(11,11,11,.82);color:#fff;font-weight:700;font-size:13px;min-width:26px;height:26px;border-radius:13px;display:flex;align-items:center;justify-content:center;padding:0 7px}
+.center{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;justify-content:center}
+
+/* studio */
+.story{width:100%;max-width:300px;aspect-ratio:9/16;display:block;margin:0 auto;border:2px solid var(--ink);border-radius:18px;background:#ddd}
+.swatchpick{display:flex;gap:8px;flex-wrap:wrap}
+.swatchpick button{width:40px;height:40px;border-radius:50%;border:2px solid var(--ink);cursor:pointer}
+.swatchpick button.on{outline:3px solid var(--ink);outline-offset:3px}
+.qrbox{width:220px;height:220px;margin:12px auto 0;border:2px solid var(--ink);border-radius:14px;overflow:hidden;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px;text-align:center;padding:8px}
+.qrbox svg{width:100%;height:100%}
+.safe{position:relative;max-width:300px;margin:0 auto;aspect-ratio:9/16;border:2px solid var(--ink);border-radius:18px;overflow:hidden;background:#ddd center/cover no-repeat}
+.safe .zone{position:absolute;left:0;right:0;background:rgba(200,70,61,.35);color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;text-shadow:0 1px 2px #000}
+.safe .top{top:0;height:13%}
+.safe .bot{bottom:0;height:18%}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:13px;color:var(--muted);font-weight:700}
+
+/* captions */
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.tag{font:inherit;font-size:14px;font-weight:600;padding:6px 12px;border-radius:999px;border:2px solid var(--ink);background:var(--surface);cursor:pointer;unicode-bidi:plaintext}
+.tag.on{background:var(--deep);color:#fff}
+.meter{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-top:6px}
+.meter .bad{color:var(--red);font-weight:700}
+.checks{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:8px}
+.check{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:2px solid var(--line);border-radius:12px;cursor:pointer;background:var(--bg)}
+.check.done{border-color:var(--green);background:#E3F3E9}
+.check.done span{text-decoration:line-through;color:var(--muted)}
+.ready{margin-top:12px;font-weight:700;padding:10px 12px;border-radius:12px;text-align:center}
+.ready.no{background:#FFF1CF;color:var(--amber)}
+.ready.yes{background:#E3F3E9;color:var(--green)}
+.dm{border:2px solid var(--ink);border-radius:14px;padding:12px 14px;background:var(--bg);display:grid;gap:6px}
+.dm pre{margin:0;font:inherit;white-space:pre-wrap;direction:rtl;text-align:left}
+
+/* event */
+.tourn{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:12px}
+.tcard{border:2px solid var(--ink);border-radius:14px;padding:14px;background:var(--bg)}
+.tcard .i{font-size:30px}
+.tcard dl{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;margin:8px 0 0;font-size:14px}
+.tcard dt{color:var(--muted)}
+.tcard dd{margin:0;font-weight:600}
+.team{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:12px}
+.person{border:2px solid var(--ink);border-radius:14px;padding:14px;background:var(--bg)}
+.avatar{width:48px;height:48px;border-radius:50%;background:var(--slate);border:2px solid var(--ink);display:flex;align-items:center;justify-content:center;font-family:Lalezar;font-size:22px;margin-bottom:8px}
+.progress{height:12px;border:2px solid var(--ink);border-radius:999px;overflow:hidden;background:var(--surface);margin-top:8px}
+.progress i{display:block;height:100%;background:var(--green);width:0;transition:width .2s}
+
+/* brand */
+.logo-box{display:flex;flex-direction:column;align-items:center;gap:14px}
+.logo-box img{max-width:100%;width:300px;background:#fff;border-radius:14px}
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:12px}
+.sw{border:2px solid var(--ink);border-radius:14px;overflow:hidden;cursor:pointer;background:var(--surface);text-align:start;font:inherit;padding:0;color:var(--ink)}
+.sw i{display:block;height:64px;border-bottom:2px solid var(--ink)}
+.sw span{display:block;padding:8px 10px;font-size:14px}
+.sw span b{display:block}
+.wrong{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.wrong s{background:#FBE1DE;color:var(--red);padding:4px 10px;border-radius:999px;font-weight:700;font-size:14px}
+.full{grid-column:1/-1}
+
+/* board */
+.boardrow{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;padding:14px 0;border-bottom:1px solid var(--line)}
+.boardrow:last-child{border-bottom:0}
+.boardrow .ic{font-size:28px;line-height:1}
+
+.toast{position:fixed;bottom:20px;left:50%;opacity:0;pointer-events:none;transform:translateX(-50%) translateY(100px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-weight:700;transition:transform .25s,opacity .25s;z-index:20}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (max-width:760px){
+  .hero,.tool,.two{grid-template-columns:1fr}
+  .count .n{font-size:64px}
+  h2{font-size:28px}
+  .task{grid-template-columns:auto 1fr}
+  .task .pill{grid-column:2;justify-self:start}
+  nav a{padding:7px 10px;font-size:13px}
+}
+</style>
+</head>
+<body>
+<header><div class="wrap bar">
+  <a href="#home"><img src="assets/logo.jpeg" alt="Home"></a>
+  <nav>
+    <a href="#home" data-link="home">This week</a>
+    <a href="#grid" data-link="grid">Grid</a>
+    <a href="#studio" data-link="studio">Studio</a>
+    <a href="#captions" data-link="captions">Captions</a>
+    <a href="#event" data-link="event">Event</a>
+    <a href="#brand" data-link="brand">Brand</a>
+    <a href="#board" data-link="board">Board</a>
+  </nav>
+  <a id="teamBtn" class="teambtn" href="/" hidden>⚙️ Admin dashboard</a>
+</div></header>
+
+<main class="wrap">
+
+<!-- ============ HOME ============ -->
+<section data-page="home">
+  <details class="guide" open><summary>ℹ️ What is this page? <span class="ar">وش هذي الصفحة؟</span></summary><p>The start page. It shows how many days are left, and this week's tasks for the whole team.</p><ol><li>Read this week's tasks and their dates.</li><li>Open <b>My tasks</b> on the team site to start and submit yours.</li><li>Use the tiles at the bottom to open each tool.</li></ol><p class="ar" dir="rtl">صفحة البداية: كم يوم باقي، ومهام هذا الأسبوع للتيم. مهامك أنت وتسليمها في موقع التيم.</p></details>
+  <div class="hero">
+    <div class="card facts">
+      <h1 id="evName"></h1>
+      <div class="ar" id="evNameAr"></div>
+      <p style="margin-top:14px"><b>📅 <span id="evDates"></span></b></p>
+      <p><b>📍 <span id="evPlace"></span></b></p>
+    </div>
+    <div class="card count">
+      <div class="n" id="days">–</div>
+      <div><b>days to go</b></div>
+      <div style="opacity:.8;font-size:14px">يوم باقي على الإيفنت</div>
+    </div>
+  </div>
+
+  <div class="card week">
+    <h2 id="weekTitle"></h2>
+    <ul class="tasks" id="tasks"></ul>
+    <div class="note">👀 <span id="headNote"></span></div>
+    <p class="muted small" style="margin:14px 0 0">When you finish a task, submit it on the <a id="sheetLink" target="_blank" rel="noopener">team site</a>.</p>
+  </div>
+
+  <div class="tiles">
+    <a class="tilelink" href="#grid"><b>🧩 Grid Preview</b><span>Split a design into posts</span></a>
+    <a class="tilelink" href="#studio"><b>⏳ Countdown story</b><span>Ready story in one tap</span></a>
+    <a class="tilelink" href="#captions"><b>✍️ Captions</b><span>Templates, hashtags, checklist</span></a>
+    <a class="tilelink" href="#event"><b>🏆 Event</b><span>Tournaments, team, shot list</span></a>
+    <a class="tilelink" href="#brand"><b>🎨 Brand Kit</b><span>Logo, colors, fonts</span></a>
+    <a class="tilelink" href="#board"><b>📁 Board</b><span>Files, ideas, calendar</span></a>
+  </div>
+</section>
+
+<!-- ============ GRID ============ -->
+<section data-page="grid">
+  <h2>Grid Preview</h2>
+  <details class="guide" open><summary>ℹ️ What is this page? <span class="ar">وش هذي الصفحة؟</span></summary><p>For one big design that is split into 3, 6 or 9 Instagram posts, so the profile shows one picture.</p><ol><li>Tap <b>Choose your design</b> and pick the big design from your phone.</li><li>Choose how many posts (3, 6 or 9) and the shape.</li><li>Check the preview: it looks like our profile.</li><li>Tap <b>Download all posts</b>. The files are numbered.</li><li>Post <b>post-1 first</b>, then post-2, and so on. The last one ends top left.</li></ol><p class="ar" dir="rtl">لو عندك تصميم كبير ينقسم على 3 أو 6 أو 9 بوستات: اختاره، شوف الشكل، نزّل البوستات، وانشرها بالترتيب من 1. الصورة ما تطلع من جوالك.</p></details>
+  
+  <div class="tool">
+    <div class="card">
+      <label class="drop" id="drop">
+        <input type="file" id="file" accept="image/*">
+        <b style="font-size:28px">🖼️</b>
+        <b>Choose your design</b>
+        <span class="muted small">or drag it here</span>
+      </label>
+      <label class="lbl">How many posts?</label>
+      <div class="seg" id="segCount"><button data-v="3">3</button><button data-v="6" class="on">6</button><button data-v="9">9</button></div>
+      <label class="lbl">Post shape</label>
+      <div class="seg" id="segShape"><button data-v="1.3333" class="on">3:4 (profile)</button><button data-v="1">Square</button></div>
+      <label class="toggle"><input type="checkbox" id="showOrder" checked> Show posting order</label>
+      <label class="toggle"><input type="checkbox" id="showOld" checked> Show older posts under it</label>
+      <div class="tip">💡 Instagram puts the newest post at the top left. So post <b>number 1 first</b> (bottom right) and the top left one last.</div>
+    </div>
+    <div>
+      <div class="phone">
+        <div class="ighead"><img src="assets/logo.jpeg" alt=""><div><b>Fla w Tbatik</b><div class="stats">Profile preview</div></div></div>
+        <div class="igtabs">▦ POSTS</div>
+        <div class="iggrid" id="iggrid"></div>
+      </div>
+      <div class="center"><button class="btn" id="dlAll" disabled>⬇️ Download all posts</button></div>
+      <p class="muted small" style="text-align:center;margin-top:8px">Files are named in posting order: post-1 first.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ STUDIO ============ -->
+<section data-page="studio">
+  <h2>Studio</h2>
+  <details class="guide" open><summary>ℹ️ What is this page? <span class="ar">وش هذي الصفحة؟</span></summary><p>Ready things you make in one tap: the countdown story, a QR code, and a check that your story text is not hidden.</p><ol><li><b>Countdown story</b>: write the days left (it is filled for today), pick the language and the color, tap <b>Download story</b>, post it.</li><li><b>QR code</b>: paste a link (Instagram, tickets, a form). Download the QR and use it in a design or print it.</li><li><b>Story safe zones</b>: choose your story design. If text is in the red parts, move it: Instagram covers them.</li><li><b>Sizes</b>: the right size for each kind of post.</li></ol><p class="ar" dir="rtl">أدوات جاهزة: ستوري العدّ التنازلي بضغطة، كود QR لأي رابط، وتشييك إن الكلام في الستوري ما يتغطى، ومقاسات البوستات.</p></details>
+  
+  <div class="stack">
+    <div class="card">
+      <h3>⏳ Countdown story</h3>
+      <p class="muted small" style="margin:0">A story with the days left, in the brand colors. Make today's, or the next days' ahead of time.</p>
+      <div class="two" style="margin-top:12px">
+        <div>
+          <label class="lbl">Days left</label>
+          <input type="number" id="cdDays" min="0" max="999">
+          <label class="lbl">Language</label>
+          <div class="seg" id="cdLang"><button data-v="both" class="on">Both</button><button data-v="ar">عربي</button><button data-v="en">English</button></div>
+          <label class="lbl">Background</label>
+          <div class="swatchpick" id="cdBg"></div>
+          <div class="center" style="justify-content:flex-start"><button class="btn" id="cdDl">⬇️ Download story</button></div>
+        </div>
+        <canvas class="story" id="cdCanvas" width="1080" height="1920"></canvas>
+      </div>
+    </div>
+
+    <div class="two">
+      <div class="card">
+        <h3>🔳 QR code</h3>
+        <p class="muted small" style="margin:0">Paste any link (Instagram, tickets, a form) and get a QR to print or post.</p>
+        <label class="lbl">Link</label>
+        <input type="url" id="qrText" placeholder="https://instagram.com/...">
+        <div class="qrbox" id="qrBox">Paste a link to see the QR</div>
+        <div class="center"><button class="btn" id="qrDl" disabled>⬇️ Download QR</button></div>
+      </div>
+      <div class="card">
+        <h3>📱 Story safe zones</h3>
+        <p class="muted small" style="margin:0">Choose a story design to see where Instagram covers it. Keep text out of the red parts.</p>
+        <label class="drop" style="margin:12px 0"><input type="file" id="safeFile" accept="image/*"><b>Choose a story design</b></label>
+        <div class="safe" id="safeBox"><div class="zone top">Name and buttons cover this</div><div class="zone bot">Reply box covers this</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>📐 Sizes</h3>
+      <table><thead><tr><th>What</th><th>Size (px)</th><th>Note</th></tr></thead><tbody id="sizes"></tbody></table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CAPTIONS ============ -->
+<section data-page="captions">
+  <h2>Captions</h2>
+  <details class="guide" open><summary>ℹ️ What is this page? <span class="ar">وش هذي الصفحة؟</span></summary><p>Help to write the text under a post, with the right date, place and hashtags. Then a short check before posting.</p><ol><li><b>1. Choose a template</b>: what kind of post it is (save the date, countdown, or empty).</li><li><b>2. Write your idea</b> in the box. The date and place are already in it. Don't change them.</li><li><b>3. Tap hashtags</b> to add them (3 to 5 is best).</li><li><b>4. Tap Copy caption</b> and paste it in Instagram.</li><li><b>5. Before you post</b>: tick every line on the right. Post only when it says ready, and only after ✅ on the team site.</li><li><b>DM replies</b>: when people ask “where?” or “when?”, copy the ready answer.</li></ol><p class="ar" dir="rtl">تكتب الكابشن هنا: اختر القالب، اكتب فكرتك (التاريخ والمكان جاهزين)، اختر الهاشتاقات، انسخ، وشيّك القائمة قبل النشر. وفيه ردود جاهزة للخاص.</p></details>
+  
+  <div class="stack">
+    <div class="card">
+      <h3>✍️ Write a caption</h3>
+      <label class="lbl">1. What kind of post?</label>
+      <select id="capTpl"></select>
+      <label class="lbl">2. Write your idea here (date and place are already in)</label>
+      <textarea id="capText" dir="auto"></textarea>
+      <label class="lbl">3. Tap hashtags to add them <span class="muted small">(3 to 5)</span></label>
+      <div class="tags" id="capTags"></div>
+      <div class="meter"><span id="capCount"></span><span id="capTagCount"></span></div>
+      <div class="center" style="justify-content:flex-start"><button class="btn" id="capCopy">📋 4. Copy caption</button></div>
+    </div>
+    <div class="two">
+      <div class="card">
+        <h3>✅ 5. Before you post</h3>
+        <ul class="checks" id="checks"></ul>
+        <div class="ready no" id="ready"></div>
+        <div class="center" style="justify-content:flex-start"><button class="btn ghost sm" id="checkReset">Reset for the next post</button></div>
+      </div>
+      <div class="card">
+        <h3>💬 Ready replies for DMs and comments</h3>
+        <p class="muted small" style="margin:0 0 10px">When people ask in DMs or comments, copy the answer.</p>
+        <div class="stack" style="gap:10px" id="dms"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ EVENT ============ -->
+<section data-page="event">
+  <h2>Event</h2>
+  <details class="guide" open><summary>ℹ️ What is this page? <span class="ar">وش هذي الصفحة؟</span></summary><p>What you need to know to post about the event: the tournaments, the media team, and the shots to take on 24 and 25 Dec.</p><ol><li>Read the tournaments before you post about them. No fees or prizes until they are confirmed.</li><li>On event days, tick each shot as you take it (saved on your phone).</li></ol><p class="ar" dir="rtl">معلومات الإيفنت للنشر: البطولات، فريق الميديا، وقائمة اللقطات يوم الإيفنت. لا تنشر رسوم أو جوائز قبل ما تتأكد.</p></details>
+  
+  <div class="stack">
+    <div class="card">
+      <h3>🏆 Tournaments</h3>
+      <p class="muted small" style="margin:0">Fees and prizes will be added here once they are confirmed. Don't post them before.</p>
+      <div class="tourn" id="tourn"></div>
+    </div>
+    <div class="card">
+      <h3>👥 Media team</h3>
+      <div class="team" id="team"></div>
+    </div>
+    <div class="card">
+      <h3>🎥 Shot list for the event days</h3>
+      <p class="muted small" style="margin:0">Tick each shot as you take it. Ticks are saved on your phone only.</p>
+      <div class="progress"><i id="shotBar"></i></div>
+      <p class="small" id="shotCount" style="margin:6px 0 0"></p>
+      <ul class="checks" id="shots"></ul>
+      <div class="center" style="justify-content:flex-start"><button class="btn ghost sm" id="shotReset">Clear ticks</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BRAND ============ -->
+<section data-page="brand">
+  <h2>Brand Kit</h2>
+  <details class="guide" open><summary>ℹ️ What is this page? <span class="ar">وش هذي الصفحة؟</span></summary><p>The logo, colors, fonts and the right way to write the date and place, so every post looks the same.</p><ol><li>Download the logo from here only.</li><li>Tap a color to copy its code.</li><li>Always write the date and place exactly like this. Never use the old dates in red.</li></ol><p class="ar" dir="rtl">الشعار والألوان والخطوط، وطريقة كتابة التاريخ والمكان. الألوان الحالية مؤقتة لين يوصل البراند كيت الرسمي من رؤى.</p></details>
+  
+  <div class="two">
+    <div class="card logo-box">
+      <img src="assets/logo.jpeg" alt="Fla w Tbatik logo">
+      <a class="btn" href="assets/logo.jpeg" download="fla-w-tbatik-logo.jpg">⬇️ Download logo</a>
+    </div>
+    <div class="card">
+      <b>Event facts: always write them like this</b>
+      <p style="margin:10px 0 4px">📅 <span id="bDates"></span></p>
+      <p class="ar" style="margin:0 0 10px" id="bDatesAr"></p>
+      <p style="margin:0 0 4px">📍 <span id="bPlace"></span></p>
+      <p class="ar" style="margin:0" id="bPlaceAr"></p>
+      <p style="margin:16px 0 0"><b>❌ Old dates: never use</b></p>
+      <div class="wrong" id="wrong"></div>
+    </div>
+    <div class="card full">
+      <b>Colors</b> <span class="muted small">(tap to copy · temporary until the official brand kit from Roua)</span>
+      <div class="swatches" id="swatches"></div>
+    </div>
+    <div class="card full">
+      <b>Fonts</b>
+      <div id="fonts"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BOARD ============ -->
+<section data-page="board">
+  <h2>Board</h2>
+  <details class="guide" open><summary>ℹ️ What is this page? <span class="ar">وش هذي الصفحة؟</span></summary><p>Links to the shared files and the Media Board (a Google Sheet with one tab for each thing we track).</p><ol><li><b>Media Files</b>: put every design, photo and video here.</li><li><b>Ideas</b>: write your ideas any time. We choose in the meeting.</li><li><b>Content Calendar</b>: what goes out and when. Suhad fills it.</li><li><b>Coverage</b>: who covers what on event days.</li><li><b>My tasks</b>: your tasks and where you submit your work.</li></ol><p class="ar" dir="rtl">روابط الملفات المشتركة والبورد. أي شي تعبيه في البورد يشوفه التيم كله.</p></details>
+  
+  <div class="card">
+    <div class="boardrow"><div class="ic">📁</div><div><b>Media Files</b> <span class="muted small">(Google Drive folder)</span><p class="muted small" style="margin:2px 0 8px">Put every design, photo and video here. Then send the link with your task on the team site.</p><a class="btn sm" id="lnFolder" target="_blank" rel="noopener">Open folder</a></div></div>
+    <div class="boardrow"><div class="ic">💡</div><div><b>Ideas Box</b><p class="muted small" style="margin:2px 0 8px">Write your own ideas any time. We choose together in the meeting.</p><a class="btn sm" data-board="667328756" target="_blank" rel="noopener">Open Ideas</a></div></div>
+    <div class="boardrow"><div class="ic">✅</div><div><b>Approvals</b><p class="muted small" style="margin:2px 0 8px">Submit your design and caption on the team site. Suhad and Rashad mark it ✅ Approve or ✏️ Changes. Post only after ✅.</p><a class="btn sm" data-site target="_blank" rel="noopener">Open team site</a></div></div>
+    <div class="boardrow"><div class="ic">🗓️</div><div><b>Content Calendar</b><p class="muted small" style="margin:2px 0 8px">What goes out and when. Suhad fills it from the media plan.</p><a class="btn sm" data-board="1015473257" target="_blank" rel="noopener">Open Content Calendar</a></div></div>
+    <div class="boardrow"><div class="ic">🎥</div><div><b>Event coverage</b><p class="muted small" style="margin:2px 0 8px">Who films and who posts stories on 24 and 25 Dec.</p><a class="btn sm" data-board="1706333842" target="_blank" rel="noopener">Open Coverage</a></div></div>
+    <div class="boardrow"><div class="ic">📋</div><div><b>My tasks</b><p class="muted small" style="margin:2px 0 8px">Log in to the team site to see your tasks, start them and submit your work.</p><a class="btn sm" data-site target="_blank" rel="noopener">Open my tasks</a></div></div>
+  </div>
+  <p class="muted small" style="margin-top:12px">💡 The Media Board has a tab for each thing we track: Content Calendar, Profiles, Ticket Assets, Promo Video, Vendors, Sponsors, Ads, Outreach, Shot List, Coverage, Ideas, Report. Start with the <a data-board="1643649107" target="_blank" rel="noopener">How to use</a> tab.</p>
+</section>
+
+</main>
+<div class="toast" id="toast"></div>
+
+<script src="data.js"></script>
+<script src="local.js"></script>
+<script src="assets/qr.js"></script>
+<script>
+const D = window.FTB, $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const toast = m => { const t = $('toast'); t.textContent = m; t.classList.add('on'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 1600); };
+const copy = (txt, msg) => (navigator.clipboard ? navigator.clipboard.writeText(txt) : Promise.reject()).then(() => toast(msg || 'Copied'), () => {
+  const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); toast(msg || 'Copied'); } catch (e) { toast('Copy failed'); } ta.remove(); });
+const store = { get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+                set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} } };
+const download = (blob, name) => { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); };
+
+/* ---------- routing ---------- */
+const PAGES = ['home','grid','studio','captions','event','brand','board'];
+function route(){
+  const p = (location.hash || '#home').slice(1), page = PAGES.includes(p) ? p : 'home';
+  document.querySelectorAll('[data-page]').forEach(s => s.classList.toggle('on', s.dataset.page === page));
+  document.querySelectorAll('[data-link]').forEach(a => { const on = a.dataset.link === page; a.classList.toggle('on', on); if (on) a.scrollIntoView({ block: 'nearest', inline: 'center' }); });
+  window.scrollTo(0, 0);
+  if (page === 'studio') drawStory();
+}
+addEventListener('hashchange', route);
+
+/* ---------- home ---------- */
+const riyadhToday = () => new Date(new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Riyadh' }) + 'T00:00:00Z');
+const dayDiff = iso => Math.round((new Date(iso + 'T00:00:00Z') - riyadhToday()) / 864e5);
+const DAYS = Math.max(0, dayDiff(D.event.start));
+const E = D.event;
+$('evName').textContent = E.nameEn; $('evNameAr').textContent = E.nameAr;
+$('evDates').textContent = E.datesEn; $('evPlace').textContent = E.placeEn;
+$('days').textContent = DAYS;
+const w = D.weeks[0];
+$('weekTitle').innerHTML = 'Week ' + w.n + ' – <small>' + esc(w.range) + '</small>';
+$('tasks').innerHTML = w.tasks.map(t => {
+  const d = new Date(t.due + 'T00:00:00Z'), left = dayDiff(t.due);
+  const day = d.toLocaleDateString('en-GB', { weekday: 'short', timeZone: 'UTC' });
+  const [num, mon] = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' }).split(' ');
+  const pill = left < 0 ? '<span class="pill late">' + (-left) + 'd late</span>'
+    : left === 0 ? '<span class="pill today">Today</span>'
+    : '<span class="pill' + (left <= 2 ? ' soon' : '') + '">' + left + (left === 1 ? ' day' : ' days') + ' left</span>';
+  return '<li class="task"><div class="d">' + day + '<span>' + num + '</span>' + mon + '</div>' +
+    '<div><div class="t">' + esc(t.en) + '</div><div class="ar">' + esc(t.ar) + '</div><div class="muted" style="font-size:13px">' + esc(t.who) + '</div></div>' + pill + '</li>';
+}).join('');
+$('headNote').textContent = D.head;
+$('sheetLink').href = D.links.site;
+
+/* ---------- grid ---------- */
+let img = null, count = 6, ratio = 4 / 3, tiles = [];
+const W = 1080;
+function seg(id, cb, after){ $(id).onclick = e => { const b = e.target.closest('button'); if (!b) return;
+  $(id).querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); cb(b.dataset.v); (after || render)(); }; }
+seg('segCount', v => count = +v); seg('segShape', v => ratio = +v);
+$('showOrder').onchange = render; $('showOld').onchange = render;
+function readImage(f, cb){ if (!f || !f.type.startsWith('image/')) return; const r = new FileReader();
+  r.onload = () => { const i = new Image(); i.onload = () => cb(i, r.result); i.src = r.result; }; r.readAsDataURL(f); }
+$('file').onchange = e => readImage(e.target.files[0], i => { img = i; render(); });
+const drop = $('drop');
+['dragenter','dragover'].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave','drop'].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e => readImage(e.dataTransfer.files[0], i => { img = i; render(); }));
+function render(){
+  const rows = count / 3, H = Math.round(W * ratio), g = $('iggrid');
+  g.innerHTML = ''; tiles = [];
+  let sx = 0, sy = 0, sw = 0, sh = 0;
+  if (img) { const target = (3 * W) / (rows * H), have = img.width / img.height;
+    if (have > target) { sh = img.height; sw = sh * target; sx = (img.width - sw) / 2; } else { sw = img.width; sh = sw / target; sy = (img.height - sh) / 2; } }
+  for (let r = 0; r < rows; r++) for (let c = 0; c < 3; c++) {
+    const t = document.createElement('div'); t.className = 'tile'; t.style.aspectRatio = W + '/' + H;
+    const order = count - (r * 3 + c);
+    if (img) { const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+      cv.getContext('2d').drawImage(img, sx + c * sw / 3, sy + r * sh / rows, sw / 3, sh / rows, 0, 0, W, H); t.appendChild(cv); tiles.push({ cv, order }); }
+    if ($('showOrder').checked) { const o = document.createElement('span'); o.className = 'ord'; o.textContent = order; t.appendChild(o); }
+    g.appendChild(t);
+  }
+  if ($('showOld').checked) for (let i = 0; i < 6; i++) { const t = document.createElement('div'); t.className = 'tile old'; t.style.aspectRatio = W + '/' + H; g.appendChild(t); }
+  $('dlAll').disabled = !img;
+}
+$('dlAll').onclick = async () => {
+  for (const t of tiles.slice().sort((a, b) => a.order - b.order)) {
+    const blob = await new Promise(r => t.cv.toBlob(r, 'image/jpeg', 0.95));
+    download(blob, 'post-' + t.order + '-of-' + count + '.jpg'); await new Promise(r => setTimeout(r, 350));
+  }
+  toast('Downloaded ' + tiles.length + ' posts');
+};
+
+/* ---------- studio: countdown story ---------- */
+const logo = new Image(); logo.src = 'assets/logo.jpeg'; logo.onload = () => drawStory();
+const BGS = [{ c: '#4F6877', t: '#FFFFFF', a: '#E6DCC0' }, { c: '#7F99A8', t: '#0B0B0B', a: '#FFFFFF' }, { c: '#0B0B0B', t: '#F3EEDD', a: '#7F99A8' }, { c: '#E6DCC0', t: '#0B0B0B', a: '#4F6877' }];
+let cdBg = 0, cdLang = 'both';
+$('cdDays').value = DAYS;
+$('cdBg').innerHTML = BGS.map((b, i) => '<button style="background:' + b.c + '" data-i="' + i + '" class="' + (i ? '' : 'on') + '" aria-label="Background ' + b.c + '"></button>').join('');
+$('cdBg').onclick = e => { const b = e.target.closest('button'); if (!b) return; cdBg = +b.dataset.i;
+  $('cdBg').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); drawStory(); };
+seg('cdLang', v => cdLang = v, drawStory);
+$('cdDays').oninput = drawStory;
+function roundRect(x, c, X, Y, w, h, r){ x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + w, Y, X + w, Y + h, r); x.arcTo(X + w, Y + h, X, Y + h, r); x.arcTo(X, Y + h, X, Y, r); x.arcTo(X, Y, X + w, Y, r); x.closePath(); }
+async function drawStory(){
+  try { await Promise.all([document.fonts.load('400 120px Lalezar'), document.fonts.load('700 40px "IBM Plex Sans Arabic"')]); } catch (e) {}
+  const cv = $('cdCanvas'), x = cv.getContext('2d'), B = BGS[cdBg], n = Math.max(0, parseInt($('cdDays').value || 0, 10));
+  x.fillStyle = B.c; x.fillRect(0, 0, 1080, 1920);
+  x.fillStyle = B.a; x.globalAlpha = .18;
+  x.beginPath(); x.arc(940, 380, 330, 0, Math.PI * 2); x.fill(); x.beginPath(); x.arc(120, 1600, 280, 0, Math.PI * 2); x.fill(); x.globalAlpha = 1;
+  if (logo.complete && logo.naturalWidth) { const lw = 520, lh = lw * logo.naturalHeight / logo.naturalWidth;
+    x.save(); roundRect(x, 0, 540 - lw / 2 - 30, 300 - 30, lw + 60, lh + 60, 40); x.fillStyle = '#fff'; x.fill(); x.lineWidth = 8; x.strokeStyle = '#0B0B0B'; x.stroke(); x.restore();
+    x.drawImage(logo, 540 - lw / 2, 300, lw, lh); }
+  x.textAlign = 'center'; x.fillStyle = B.t;
+  x.font = '400 ' + (n > 99 ? 400 : 520) + 'px Lalezar, sans-serif'; x.fillText(String(n), 540, 1240);
+  const line1 = cdLang === 'en' ? (n === 1 ? 'DAY TO GO' : 'DAYS TO GO') : 'يوم باقي', line2 = cdLang === 'both' ? (n === 1 ? 'DAY TO GO' : 'DAYS TO GO') : '';
+  x.font = '400 110px Lalezar, sans-serif'; x.fillText(line1, 540, 1380);
+  if (line2) { x.font = '700 64px "IBM Plex Sans Arabic", sans-serif'; x.fillText(line2, 540, 1470); }
+  x.fillStyle = B.a; roundRect(x, 0, 140, 1530, 800, 4, 2); x.fill();
+  x.fillStyle = B.t; x.font = '700 46px "IBM Plex Sans Arabic", sans-serif';
+  x.fillText(cdLang === 'en' ? E.shortEn : E.shortAr, 540, 1610);
+  x.font = '500 40px "IBM Plex Sans Arabic", sans-serif';
+  x.fillText(cdLang === 'en' ? E.placeEn : E.placeAr, 540, 1670);
+}
+$('cdDl').onclick = () => $('cdCanvas').toBlob(b => download(b, 'countdown-' + ($('cdDays').value || 0) + '-days.png'), 'image/png');
+
+/* ---------- studio: QR ---------- */
+let qrMatrix = null;
+$('qrText').oninput = () => {
+  const v = $('qrText').value.trim(); qrMatrix = null; $('qrDl').disabled = true;
+  if (!v) { $('qrBox').textContent = 'Paste a link to see the QR'; return; }
+  try { $('qrBox').innerHTML = window.QR.svg(v); qrMatrix = window.QR.matrix(v); $('qrDl').disabled = false; }
+  catch (e) { $('qrBox').textContent = 'This link is too long. Try a shorter link.'; }
+};
+$('qrDl').onclick = () => { if (!qrMatrix) return;
+  const n = qrMatrix.length, q = 4, s = Math.floor(1000 / (n + 2 * q)), size = s * (n + 2 * q), cv = document.createElement('canvas');
+  cv.width = cv.height = size; const x = cv.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, size, size); x.fillStyle = '#0B0B0B';
+  qrMatrix.forEach((row, r) => row.forEach((v, c) => { if (v) x.fillRect((c + q) * s, (r + q) * s, s, s); }));
+  cv.toBlob(b => download(b, 'qr-code.png'), 'image/png'); };
+
+/* ---------- studio: safe zones + sizes ---------- */
+$('safeFile').onchange = e => readImage(e.target.files[0], (i, url) => { $('safeBox').style.backgroundImage = 'url(' + url + ')'; });
+$('sizes').innerHTML = D.sizes.map(s => '<tr><td><b>' + esc(s.name) + '</b></td><td>' + esc(s.px) + '</td><td class="muted">' + esc(s.note) + '</td></tr>').join('');
+
+/* ---------- captions ---------- */
+const fill = s => s.replace(/\{(\w+)\}/g, (m, k) => k === 'days' ? DAYS : (E[k] !== undefined ? E[k] : m));
+$('capTpl').innerHTML = D.captionTemplates.map((t, i) => '<option value="' + i + '">' + esc(t.name) + '</option>').join('');
+let tagsOn = new Set(D.hashtags.slice(0, 3));
+function capBody(){ return $('capText').value.replace(/\n*(#[^\s#]+\s*)+$/u, '').trimEnd(); }
+function capFull(){ const tags = D.hashtags.filter(t => tagsOn.has(t)); return capBody() + (tags.length ? '\n\n' + tags.join(' ') : ''); }
+function setTpl(){ $('capText').value = fill(D.captionTemplates[+$('capTpl').value].text); capMeter(); }
+function drawTags(){ $('capTags').innerHTML = D.hashtags.map(t => '<button class="tag' + (tagsOn.has(t) ? ' on' : '') + '" data-t="' + esc(t) + '">' + esc(t) + '</button>').join(''); capMeter(); }
+function capMeter(){ const full = capFull(), n = [...full].length, tags = (full.match(/#[^\s#]+/gu) || []).length;
+  $('capCount').innerHTML = '<span class="' + (n > 2200 ? 'bad' : '') + '">' + n + ' / 2200 characters</span>';
+  $('capTagCount').innerHTML = '<span class="' + (tags > 5 ? 'bad' : '') + '">' + tags + ' hashtags</span>'; }
+$('capTpl').onchange = setTpl; $('capText').oninput = capMeter;
+$('capTags').onclick = e => { const b = e.target.closest('.tag'); if (!b) return; const t = b.dataset.t; tagsOn.has(t) ? tagsOn.delete(t) : tagsOn.add(t); drawTags(); };
+$('capCopy').onclick = () => copy(capFull(), 'Caption copied');
+setTpl(); drawTags();
+
+/* checklist */
+let done = new Set();
+function drawChecks(){
+  $('checks').innerHTML = D.checklist.map((c, i) => '<li><label class="check' + (done.has(i) ? ' done' : '') + '"><input type="checkbox" data-i="' + i + '"' + (done.has(i) ? ' checked' : '') + '><span>' + esc(c) + '</span></label></li>').join('');
+  const all = done.size === D.checklist.length, r = $('ready');
+  r.className = 'ready ' + (all ? 'yes' : 'no'); r.textContent = all ? '✅ Ready to post' : '⏳ ' + (D.checklist.length - done.size) + ' left before you post';
+}
+$('checks').onchange = e => { const i = +e.target.dataset.i; e.target.checked ? done.add(i) : done.delete(i); drawChecks(); };
+$('checkReset').onclick = () => { done.clear(); drawChecks(); };
+drawChecks();
+
+/* DMs */
+$('dms').innerHTML = D.dmReplies.map((d, i) => '<div class="dm"><b>' + esc(d.q) + '</b><pre>' + esc(d.a) + '</pre><div><button class="btn ghost sm" data-i="' + i + '">📋 Copy</button></div></div>').join('');
+$('dms').onclick = e => { const b = e.target.closest('button'); if (b) copy(D.dmReplies[+b.dataset.i].a, 'Reply copied'); };
+
+/* ---------- event ---------- */
+$('tourn').innerHTML = D.tournaments.map(t => '<div class="tcard"><div class="i">' + t.icon + '</div><b>' + esc(t.en) + '</b> <span class="ar" style="display:inline">' + esc(t.ar) + '</span>' +
+  '<dl><dt>Format</dt><dd>' + esc(t.format) + '</dd><dt>Spots</dt><dd>' + esc(t.spots) + '</dd><dt>Fee</dt><dd><span class="pill tba">TBA</span></dd><dt>Prize</dt><dd><span class="pill tba">TBA</span></dd></dl></div>').join('');
+$('team').innerHTML = D.team.map(p => '<div class="person"><div class="avatar">' + esc(p.name[0]) + '</div><b>' + esc(p.name) + '</b><div class="small" style="font-weight:600">' + esc(p.role) + '</div><div class="muted small">' + esc(p.job) + '</div></div>').join('');
+let shots = new Set(store.get('ftb-shots', []));
+function drawShots(){
+  $('shots').innerHTML = D.shotList.map((s, i) => '<li><label class="check' + (shots.has(i) ? ' done' : '') + '"><input type="checkbox" data-i="' + i + '"' + (shots.has(i) ? ' checked' : '') + '><span>' + esc(s) + '</span></label></li>').join('');
+  $('shotBar').style.width = (100 * shots.size / D.shotList.length) + '%';
+  $('shotCount').textContent = shots.size + ' of ' + D.shotList.length + ' shots done';
+}
+$('shots').onchange = e => { const i = +e.target.dataset.i; e.target.checked ? shots.add(i) : shots.delete(i); store.set('ftb-shots', [...shots]); drawShots(); };
+$('shotReset').onclick = () => { shots.clear(); store.set('ftb-shots', []); drawShots(); };
+drawShots();
+
+/* ---------- brand ---------- */
+$('bDates').textContent = E.datesEn; $('bDatesAr').textContent = E.datesAr;
+$('bPlace').textContent = E.placeEn; $('bPlaceAr').textContent = E.placeAr;
+$('wrong').innerHTML = D.wrongDates.map(x => '<s>' + esc(x) + '</s>').join('');
+$('swatches').innerHTML = D.colors.map(c => '<button class="sw" data-hex="' + c.hex + '"><i style="background:' + c.hex + '"></i><span><b>' + esc(c.name) + '</b>' + c.hex + '</span></button>').join('');
+$('swatches').onclick = e => { const b = e.target.closest('.sw'); if (b) copy(b.dataset.hex, 'Copied ' + b.dataset.hex); };
+$('fonts').innerHTML = D.fonts.map(f => '<p><a href="' + f.url + '" target="_blank" rel="noopener" style="font-family:\'' + f.name + '\';font-size:24px;color:var(--ink)">' + esc(f.name) + '</a><br><span class="muted">' + esc(f.use) + '</span></p>').join('');
+
+/* ---------- board ---------- */
+$('lnFolder').href = D.links.folder;
+// On the team site (/tools/) show the admin button only to admins. On GitHub Pages it stays hidden.
+document.querySelectorAll('[data-site]').forEach(a => a.href = D.links.site);
+(async () => { if (!location.pathname.startsWith('/tools')) return;
+  document.querySelectorAll('[data-site]').forEach(a => { a.href = '/'; a.removeAttribute('target'); });
+  $('sheetLink').href = '/';
+  try { const me = await fetch('/api/me').then(r => r.json());
+    if (me.user && me.user.role === 'admin' && !me.preview_by) { const b = $('teamBtn'); b.href = '/?admin=1'; b.hidden = false; } } catch (e) {} })();
+document.querySelectorAll('[data-board]').forEach(a => a.href = D.links.board + '#gid=' + a.dataset.board);
+
+render(); route();
+</script>
+</body>
+</html>

@@ -12,7 +12,7 @@ from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 PUBLIC = os.path.join(ROOT, 'public')
-TOOLS_DIR = os.path.dirname(ROOT)  # the tools site (repo root: index.html, data.js, assets/)
+TOOLS_DIR = os.path.join(os.path.dirname(ROOT), '_tools')  # the tools pages (index.html, data.js, assets/)
 DATA_DIR = os.environ.get('FTB_DATA', os.path.join(ROOT, 'data'))
 FILES = os.path.join(DATA_DIR, 'files')
 PORT = int(os.environ.get('FTB_PORT', '8090'))
@@ -323,6 +323,11 @@ class H(BaseHTTPRequestHandler):
                 return self.send(302, {}, headers={'Location': '/tools/'})
             p = '/tools/index.html'
         rel = p[len('/tools/'):]
+        if rel == 'local.js':
+            # Private team info (names, Drive links). Kept on the Pi, never in git.
+            f = os.path.join(DATA_DIR, 'tools-local.js')
+            body = open(f, 'rb').read() if os.path.isfile(f) else b''
+            return self.send(200, ctype='text/javascript', body=body)
         if not (rel in ('index.html', 'data.js') or rel.startswith('assets/')):
             return self.err(404, 'Not found')
         f = os.path.normpath(os.path.join(TOOLS_DIR, rel))
