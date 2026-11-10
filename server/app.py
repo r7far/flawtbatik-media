@@ -248,6 +248,7 @@ class H(BaseHTTPRequestHandler):
         return ip.startswith(('127.', '192.168.', '10.', '::1'))
 
     def user(self):
+        self.preview_by = None
         ck = http.cookies.SimpleCookie(self.headers.get('Cookie') or '')
         tok = ck.get('ftb') and ck['ftb'].value
         if not tok:
@@ -256,7 +257,22 @@ class H(BaseHTTPRequestHandler):
             r = c.execute('SELECT u.* FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token=? AND u.active=1', (tok,)).fetchone()
             if r and time.time() - (r['last_seen'] or 0) > 20:
                 c.execute('UPDATE users SET last_seen=? WHERE id=?', (time.time(), r['id']))
+            # Admin "view as": see the site exactly as another user, read only.
+            asid = ck.get('ftbas') and ck['ftbas'].value
+            if r and r['role'] == 'admin' and asid and asid.isdigit():
+                t = c.execute('SELECT * FROM users WHERE id=?', (int(asid),)).fetchone()
+                if t:
+                    self.preview_by = r['name']
+                    return t
         return r
+
+    def real_admin(self):
+        ck = http.cookies.SimpleCookie(self.headers.get('Cookie') or '')
+        tok = ck.get('ftb') and ck['ftb'].value
+        if not tok:
+            return None
+        with db() as c:
+            return c.execute("SELECT u.* FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token=? AND u.active=1 AND u.role='admin'", (tok,)).fetchone()
 
     def need(self, *roles):
         u = self.user()
@@ -324,6 +340,22 @@ class H(BaseHTTPRequestHandler):
         R = lambda pat: re.fullmatch(pat, p)
         b = self.body() if method == 'POST' else {}
 
+        # ---- view as (admin preview)
+        if p == '/api/viewas' and method == 'POST':
+            self.user()
+            real = self.real_admin()
+            if not real:
+                return self.err(403, 'Not allowed')
+            uid = b.get('id')
+            if uid:
+                log(real['id'], 'viewing the site as user %s' % uid)
+                return self.send(200, {'ok': True}, headers={'Set-Cookie': 'ftbas=%d; Path=/; HttpOnly; SameSite=Lax; Max-Age=7200' % int(uid)})
+            return self.send(200, {'ok': True}, headers={'Set-Cookie': 'ftbas=; Path=/; Max-Age=0'})
+        if method == 'POST' and p not in ('/api/logout', '/api/login'):
+            self.user()
+            if self.preview_by:
+                return self.err(403, 'Preview only. Nothing was changed.')
+
         # ---- auth
         if p == '/api/login' and method == 'POST':
             with db() as c:
@@ -345,10 +377,19 @@ class H(BaseHTTPRequestHandler):
             if ck.get('ftb'):
                 with db() as c:
                     c.execute('DELETE FROM sessions WHERE token=?', (ck['ftb'].value,))
-            return self.send(200, {'ok': True}, headers={'Set-Cookie': 'ftb=; Path=/; Max-Age=0'})
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Set-Cookie', 'ftb=; Path=/; Max-Age=0')
+            self.send_header('Set-Cookie', 'ftbas=; Path=/; Max-Age=0')
+            out = b'{"ok": true}'
+            self.send_header('Content-Length', str(len(out)))
+            self.end_headers()
+            self.wfile.write(out)
+            return
         if p == '/api/me':
             u = self.user()
-            return self.send(200, {'user': user_public(u) if u else None, 'maintenance': setting('maintenance') == '1',
+            return self.send(200, {'user': user_public(u) if u else None, 'preview_by': getattr(self, 'preview_by', None),
+                                   'maintenance': setting('maintenance') == '1',
                                    'setup': no_users() and self.local()})
         if p == '/api/setup' and method == 'POST':
             # First admin can only be created from the home network, before any user exists.
@@ -396,8 +437,9 @@ class H(BaseHTTPRequestHandler):
                 tasks = [dict(r) for r in c.execute('SELECT * FROM tasks ORDER BY week, due, row')]
                 pub = {r['n']: r['published'] for r in c.execute('SELECT * FROM weeks')}
                 subs = [dict(r) for r in c.execute('SELECT s.*, u.name AS by_name FROM subs s LEFT JOIN users u ON u.id=s.user_id ORDER BY s.id')]
-            with db() as c:
-                c.execute('UPDATE users SET last_tasks=? WHERE id=?', (time.time(), u['id']))
+            if not self.preview_by:
+                with db() as c:
+                    c.execute('UPDATE users SET last_tasks=? WHERE id=?', (time.time(), u['id']))
             if u['role'] != 'admin':
                 tasks = [t for t in tasks if pub.get(t['week'])]
             if u['role'] == 'member':
