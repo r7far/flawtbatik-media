@@ -533,7 +533,8 @@ class H(BaseHTTPRequestHandler):
 
         # ---- admin
         if p.startswith('/api/admin/'):
-            u = self.need('admin')
+            # Head of media may only see Team status; everything else is admin only.
+            u = self.need('admin', 'head') if p == '/api/admin/team' else self.need('admin')
             if not u:
                 return
             if p == '/api/admin/users':

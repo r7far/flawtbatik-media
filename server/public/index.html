@@ -245,7 +245,9 @@ async function teamView(){
     const d = ts.filter(t => t.status === 'Done').length, p = Math.round(100 * d / ts.length);
     return '<tr><td><b>' + esc(o) + '</b></td><td>' + ts.length + '</td><td>' + d + '</td><td style="min-width:120px">' + p + '%<div class="bar2"><i style="width:' + p + '%"></i></div></td></tr>'; }).join('') + '</table></div>';
   if (late.length) h += '<h3>🔴 Late</h3>' + late.map(t => taskCard(t, {showOwner:true})).join('');
+  if (['admin','head'].includes(ME.role)) h = h.replace('<h2>Team</h2>', '<h2>Team</h2><div id="ab" style="margin-top:12px"></div>');
   app.innerHTML = h;
+  if (['admin','head'].includes(ME.role)) aTeam();
 }
 
 async function adminView(){
@@ -259,7 +261,7 @@ const stPill = st => { const k = {'Done':'done','Submitted':'sub','Changes reque
 async function aTeam(){
   const {team} = await api('/api/admin/team');
   const started = t => t.status !== 'Not Started';
-  $('#ab').innerHTML = '<div class="card"><div class="row" style="margin:0 0 10px;justify-content:space-between"><h3>Who is doing what</h3><span class="small muted">Updates every 30 seconds</span></div>' +
+  $('#ab').innerHTML = '<div class="card" id="tsLive"><div class="row" style="margin:0 0 10px;justify-content:space-between"><h3>Who is doing what</h3><span class="small muted">Updates every 30 seconds</span></div>' +
     (team.length ? team.map(m => {
       const n = m.tasks.length, s = m.tasks.filter(started).length, d = m.tasks.filter(t => t.status === 'Done').length;
       const dot = !m.joined ? '⚪' : m.online ? '🟢' : '⚫';
@@ -268,7 +270,7 @@ async function aTeam(){
         '<div class="small muted">' + state + (m.last_login ? ' · last login ' + esc(m.last_login) : '') + ' · opened tasks: ' + ago(m.tasks_ago) + (m.last_action ? ' · last thing: ' + esc(m.last_action) + ' (' + esc(m.last_action_at) + ')' : '') + '</div>' +
         (n ? '<table style="margin-top:6px">' + m.tasks.map(t => '<tr><td>W' + t.week + '</td><td>' + esc(t.task) + '<div class="small muted">Due ' + esc(t.due || '—') + (t.submitted ? ' · sent ' + esc(t.submitted) : '') + '</div></td><td>' + stPill(t.status) + '</td></tr>').join('') + '</table>' : '') + '</div>';
     }).join('') : '<p class="muted">No team members yet.</p>') + '<p class="small muted" style="margin-top:10px">🟢 online · ⚫ offline · ⚪ not joined yet</p></div>';
-  clearTimeout(window._tt); window._tt = setTimeout(() => { if (AT === 'team' && $('#at')) aTeam(); }, 30000);
+  clearTimeout(window._tt); window._tt = setTimeout(() => { if ($('#tsLive')) aTeam(); }, 30000);
 }
 async function aUsers(){
   const {users, public: pub} = await api('/api/admin/users');
