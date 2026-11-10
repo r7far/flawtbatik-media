@@ -587,7 +587,7 @@ class H(BaseHTTPRequestHandler):
                 log(u['id'], 'week %s %s' % (b['n'], 'published' if b.get('published') else 'hidden'))
                 return self.send(200, {'ok': True})
             if p == '/api/admin/settings':
-                keys = ('bridge_url', 'bridge_token', 'maintenance', 'ntfy')
+                keys = ('bridge_url', 'bridge_token', 'maintenance', 'ntfy', 'board_url')
                 if method == 'GET':
                     return self.send(200, {k: (setting(k) if k != 'bridge_token' else ('set' if setting(k) else '')) for k in keys}
                                      | {'last_sync': setting('last_sync')})

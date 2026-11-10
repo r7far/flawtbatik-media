@@ -168,6 +168,7 @@ th{font-size:13px;color:var(--muted);font-weight:700}
 /* board */
 .boardrow{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;padding:14px 0;border-bottom:1px solid var(--line)}
 .boardrow:last-child{border-bottom:0}
+.adminonly[hidden]{display:none}
 .boardrow .ic{font-size:28px;line-height:1}
 
 .toast{position:fixed;bottom:20px;left:50%;opacity:0;pointer-events:none;transform:translateX(-50%) translateY(100px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-weight:700;transition:transform .25s,opacity .25s;z-index:20}
@@ -230,7 +231,7 @@ th{font-size:13px;color:var(--muted);font-weight:700}
     <a class="tilelink" href="#captions"><b>✍️ Captions</b><span>Templates, hashtags, checklist</span></a>
     <a class="tilelink" href="#event"><b>🏆 Event</b><span>Tournaments, team, shot list</span></a>
     <a class="tilelink" href="#brand"><b>🎨 Brand Kit</b><span>Logo, colors, fonts</span></a>
-    <a class="tilelink" href="#board"><b>📁 Board</b><span>Files, ideas, calendar</span></a>
+    <a class="tilelink" href="#board"><b>📁 Board</b><span>Files and your tasks</span></a>
   </div>
 </section>
 
@@ -406,17 +407,16 @@ th{font-size:13px;color:var(--muted);font-weight:700}
 <!-- ============ BOARD ============ -->
 <section data-page="board">
   <h2>Board</h2>
-  <details class="guide" open><summary>ℹ️ What is this page? <span class="ar">وش هذي الصفحة؟</span></summary><p>Links to the shared files and the Media Board (a Google Sheet with one tab for each thing we track).</p><ol><li><b>Media Files</b>: put every design, photo and video here.</li><li><b>Ideas</b>: write your ideas any time. We choose in the meeting.</li><li><b>Content Calendar</b>: what goes out and when. Suhad fills it.</li><li><b>Coverage</b>: who covers what on event days.</li><li><b>My tasks</b>: your tasks and where you submit your work.</li></ol><p class="ar" dir="rtl">روابط الملفات المشتركة والبورد. أي شي تعبيه في البورد يشوفه التيم كله.</p></details>
+  <details class="guide" open><summary>ℹ️ What is this page? <span class="ar">وش هذي الصفحة؟</span></summary><p>Where the team keeps its files.</p><ol><li><b>Media Files</b>: put every design, photo and video here.</li><li><b>My tasks</b>: your tasks, and where you submit your work.</li></ol><p class="ar" dir="rtl">هنا الملفات المشتركة ومهامك. المهام الجديدة تجيك من رشاد في موقع التيم.</p></details>
   
   <div class="card">
     <div class="boardrow"><div class="ic">📁</div><div><b>Media Files</b> <span class="muted small">(Google Drive folder)</span><p class="muted small" style="margin:2px 0 8px">Put every design, photo and video here. Then send the link with your task on the team site.</p><a class="btn sm" id="lnFolder" target="_blank" rel="noopener">Open folder</a></div></div>
-    <div class="boardrow"><div class="ic">💡</div><div><b>Ideas Box</b><p class="muted small" style="margin:2px 0 8px">Write your own ideas any time. We choose together in the meeting.</p><a class="btn sm" data-board="667328756" target="_blank" rel="noopener">Open Ideas</a></div></div>
-    <div class="boardrow"><div class="ic">✅</div><div><b>Approvals</b><p class="muted small" style="margin:2px 0 8px">Submit your design and caption on the team site. Suhad and Rashad mark it ✅ Approve or ✏️ Changes. Post only after ✅.</p><a class="btn sm" data-site target="_blank" rel="noopener">Open team site</a></div></div>
-    <div class="boardrow"><div class="ic">🗓️</div><div><b>Content Calendar</b><p class="muted small" style="margin:2px 0 8px">What goes out and when. Suhad fills it from the media plan.</p><a class="btn sm" data-board="1015473257" target="_blank" rel="noopener">Open Content Calendar</a></div></div>
-    <div class="boardrow"><div class="ic">🎥</div><div><b>Event coverage</b><p class="muted small" style="margin:2px 0 8px">Who films and who posts stories on 24 and 25 Dec.</p><a class="btn sm" data-board="1706333842" target="_blank" rel="noopener">Open Coverage</a></div></div>
+    <div class="boardrow adminonly" hidden><div class="ic">💡</div><div><b>Ideas Box</b><p class="muted small" style="margin:2px 0 8px">Write your own ideas any time. We choose together in the meeting.</p><a class="btn sm" data-board="667328756" target="_blank" rel="noopener">Open Ideas</a></div></div>
+    <div class="boardrow adminonly" hidden><div class="ic">🗓️</div><div><b>Content Calendar</b><p class="muted small" style="margin:2px 0 8px">What goes out and when. Suhad fills it from the media plan.</p><a class="btn sm" data-board="1015473257" target="_blank" rel="noopener">Open Content Calendar</a></div></div>
+    <div class="boardrow adminonly" hidden><div class="ic">🎥</div><div><b>Event coverage</b><p class="muted small" style="margin:2px 0 8px">Who films and who posts stories on 24 and 25 Dec.</p><a class="btn sm" data-board="1706333842" target="_blank" rel="noopener">Open Coverage</a></div></div>
     <div class="boardrow"><div class="ic">📋</div><div><b>My tasks</b><p class="muted small" style="margin:2px 0 8px">Log in to the team site to see your tasks, start them and submit your work.</p><a class="btn sm" data-site target="_blank" rel="noopener">Open my tasks</a></div></div>
   </div>
-  <p class="muted small" style="margin-top:12px">💡 The Media Board has a tab for each thing we track: Content Calendar, Profiles, Ticket Assets, Promo Video, Vendors, Sponsors, Ads, Outreach, Shot List, Coverage, Ideas, Report. Start with the <a data-board="1643649107" target="_blank" rel="noopener">How to use</a> tab.</p>
+  <p class="muted small adminonly" hidden style="margin-top:12px">🔒 Only admins see the Media Board. 💡 The Media Board has a tab for each thing we track: Content Calendar, Profiles, Ticket Assets, Promo Video, Vendors, Sponsors, Ads, Outreach, Shot List, Coverage, Ideas, Report. Start with the <a data-board="1643649107" target="_blank" rel="noopener">How to use</a> tab.</p>
 </section>
 
 </main>
@@ -622,8 +622,9 @@ document.querySelectorAll('[data-site]').forEach(a => a.href = D.links.site);
   document.querySelectorAll('[data-site]').forEach(a => { a.href = '/'; a.removeAttribute('target'); });
   $('sheetLink').href = '/';
   try { const me = await fetch('/api/me').then(r => r.json());
-    if (me.user && me.user.role === 'admin' && !me.preview_by) { const b = $('teamBtn'); b.href = '/?admin=1'; b.hidden = false; } } catch (e) {} })();
-document.querySelectorAll('[data-board]').forEach(a => a.href = D.links.board + '#gid=' + a.dataset.board);
+    if (me.user && me.user.role === 'admin' && !me.preview_by) { const b = $('teamBtn'); b.href = '/?admin=1'; b.hidden = false;
+      const st = await fetch('/api/admin/settings').then(r => r.json()); const board = st.board_url || '';
+      if (board) { document.querySelectorAll('[data-board]').forEach(a => a.href = board + '#gid=' + a.dataset.board); document.querySelectorAll('.adminonly').forEach(e => e.hidden = false); } } } catch (e) {} })();
 
 render(); route();
 </script>
