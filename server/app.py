@@ -47,6 +47,7 @@ def init_db():
         CREATE TABLE IF NOT EXISTS subs(id INTEGER PRIMARY KEY, task_key TEXT, user_id INTEGER, link TEXT, file TEXT,
           file_name TEXT, note TEXT, caption TEXT, created TEXT, review TEXT, review_by INTEGER, review_note TEXT, reviewed TEXT);
         CREATE TABLE IF NOT EXISTS log(id INTEGER PRIMARY KEY, at TEXT, user_id INTEGER, what TEXT);
+        CREATE TABLE IF NOT EXISTS notes(id INTEGER PRIMARY KEY, at TEXT, about INTEGER, author INTEGER, cat TEXT, text TEXT);
         ''')
         cols = [r['name'] for r in c.execute('PRAGMA table_info(users)')]
         if 'invite' not in cols:
@@ -637,6 +638,24 @@ class H(BaseHTTPRequestHandler):
                                 'last_action': last.get(x['id'], ('', ''))[1], 'last_action_at': last.get(x['id'], ('', ''))[0],
                                 'tasks': tl})
                 return self.send(200, {'team': out})
+            if p == '/api/admin/notes':
+                # Private notes about team members (work, skills, communication, behaviour). Admins only.
+                if method == 'POST':
+                    if b.get('delete'):
+                        with db() as c:
+                            c.execute('DELETE FROM notes WHERE id=?', (int(b['delete']),))
+                        return self.send(200, {'ok': True})
+                    text = (b.get('text') or '').strip()[:2000]
+                    cat = b.get('cat') if b.get('cat') in ('Work', 'Skills', 'Communication', 'Behaviour', 'Other') else 'Other'
+                    if not text or not str(b.get('about') or '').isdigit():
+                        return self.err(400, 'Write the note and choose a person')
+                    with db() as c:
+                        c.execute('INSERT INTO notes(at,about,author,cat,text) VALUES(?,?,?,?,?)', (now_iso(), int(b['about']), u['id'], cat, text))
+                    return self.send(200, {'ok': True})
+                with db() as c:
+                    rows = [dict(r) for r in c.execute('SELECT n.id,n.at,n.about,n.cat,n.text,a.name AS author FROM notes n LEFT JOIN users a ON a.id=n.author ORDER BY n.id DESC')]
+                    people = [dict(r) for r in c.execute("SELECT id,name,role FROM users WHERE role!='admin' ORDER BY id")]
+                return self.send(200, {'notes': rows, 'people': people})
             if p == '/api/admin/log':
                 with db() as c:
                     rows = [dict(r) for r in c.execute('SELECT l.at,l.what,u.name FROM log l LEFT JOIN users u ON u.id=l.user_id ORDER BY l.id DESC LIMIT 300')]

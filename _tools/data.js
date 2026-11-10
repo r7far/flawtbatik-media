@@ -43,10 +43,16 @@ window.FTB = {
   checklist: [
     "Date is 24–25 Dec 2026 (no old dates)",
     "Place is Al-Mohammadiya District Center",
-    "Logo is on the design",
+    "The official logo is used as it is: not redrawn, recolored, stretched or cut",
+    "Empty space around the logo (at least 10% of its width)",
+    "The logo is not on a busy background (or there is a blur / color layer behind it)",
+    "Only the official colors: blue with white, cream with black",
+    "Fonts: Impact (English) and Farah (Arabic)",
+    "One short, clear message in the middle. Not crowded",
+    "Text is big enough to read on a phone (also in the grid)",
     "Spelling checked (Arabic and English)",
     "No prices unless Rashad confirmed them",
-    "Suhad approved it on the team site (✅ Approve)",
+    "Suhad or Rashad approved it on the team site (✅ Approve)",
     "Grid order is right (post 1 first)"
   ],
   dmReplies: [
@@ -96,6 +102,20 @@ window.FTB = {
     avoid: ["Stretching or squashing it.", "Cropping the decorative strokes.", "Putting other things too close to it.", "Using it too small to read."]
   },
   brandWords: "Bringing people together through fun and creativity. Playful · Energetic · Welcoming · Creative · Connected · Memorable",
+  colorPairs: [
+    { bg: "#1085BB", fg: "#FFFFFF", text: "Blue background → white text" },
+    { bg: "#E2D9BD", fg: "#000000", text: "Cream background → black text" }
+  ],
+  designRules: [
+    "Clean and simple: one clear message, big, in the middle. Not a small text on the side.",
+    "Short words with energy. No long paragraphs, in posts or in videos.",
+    "Balance the sizes: the main words must be easy to read in one post and in the full grid.",
+    "Do not put the logo straight on a busy picture. Put a soft blur or a color layer behind it first.",
+    "The official logo is always the biggest and clearest logo. Other logos (sponsors) are smaller.",
+    "Do not add new fonts. Only Impact and Farah (and the 2 extra fonts when Rashad confirms them).",
+    "Only use the logo files we give you (folder 01 – Logo & Brand). Never send the logo to anyone, or change it, without asking Rashad.",
+    "Every design is checked on the team site before it is posted."
+  ],
   sizes: [
     { name: "Post (portrait)", px: "1080 × 1350", note: "Most posts" },
     { name: "Post (profile grid)", px: "1080 × 1440", note: "3:4, matches the profile grid" },

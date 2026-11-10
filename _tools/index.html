@@ -238,7 +238,7 @@ th{font-size:13px;color:var(--muted);font-weight:700}
 <!-- ============ GRID ============ -->
 <section data-page="grid">
   <h2>Grid Preview</h2>
-  <details class="guide" open><summary>ℹ️ What is this page? <span class="ar">وش هذي الصفحة؟</span></summary><p>For one big design that is split into 3, 6 or 9 Instagram posts, so the profile shows one picture.</p><ol><li>Tap <b>Choose your design</b> and pick the big design from your phone.</li><li>Choose how many posts (3, 6 or 9) and the shape.</li><li>Check the preview: it looks like our profile.</li><li>Tap <b>Download all posts</b>. The files are numbered.</li><li>Post <b>post-1 first</b>, then post-2, and so on. The last one ends top left.</li></ol><p class="ar" dir="rtl">لو عندك تصميم كبير ينقسم على 3 أو 6 أو 9 بوستات: اختاره، شوف الشكل، نزّل البوستات، وانشرها بالترتيب من 1. الصورة ما تطلع من جوالك.</p></details>
+  <details class="guide" open><summary>ℹ️ What is this page? <span class="ar">وش هذي الصفحة؟</span></summary><p>For one big design that is split into 3, 6 or 9 Instagram posts, so the profile shows one picture.</p><ol><li>Tap <b>Choose your design</b> and pick the big design from your phone.</li><li>Choose how many posts (3, 6 or 9) and the shape.</li><li>Check the preview: it looks like our profile.</li><li>Tap <b>Download all posts</b>. The files are numbered.</li><li>Post <b>post-1 first</b>, then post-2, and so on. The last one ends top left.</li><li>Keep it simple: the main words must be big enough to read in one post, not only in the full grid. Do not crowd it.</li></ol><p class="ar" dir="rtl">لو عندك تصميم كبير ينقسم على 3 أو 6 أو 9 بوستات: اختاره، شوف الشكل، نزّل البوستات، وانشرها بالترتيب من 1. الصورة ما تطلع من جوالك.</p></details>
   
   <div class="tool">
     <div class="card">
@@ -405,6 +405,15 @@ th{font-size:13px;color:var(--muted);font-weight:700}
       <b>Logo rules</b> <span class="muted small">(from the brand guideline)</span>
       <div class="two" style="margin-top:8px"><div><b>✅ Do</b><ul id="logoDo"></ul></div><div><b>❌ Avoid</b><ul id="logoAvoid"></ul></div></div>
       <p class="muted small" id="brandWords"></p>
+    </div>
+    <div class="card full">
+      <b>Colors together</b> <span class="muted small">(keep strong contrast)</span>
+      <div id="colorPairs" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px"></div>
+    </div>
+    <div class="card full">
+      <b>How our designs look</b> <span class="muted small">(from Roua's guideline and her notes on the first designs)</span>
+      <ol id="designRules" style="margin:8px 0 0;padding-left:20px"></ol>
+      <p class="ar" dir="rtl" style="margin-top:8px">تصميم نظيف، رسالة وحدة واضحة وكبيرة في النص، الشعار الرسمي بدون أي تعديل وحوله مساحة، والألوان الرسمية بس.</p>
     </div>
   </div>
 </section>
@@ -616,6 +625,8 @@ drawShots();
 $('bDates').textContent = E.datesEn; $('bDatesAr').textContent = E.datesAr;
 $('bPlace').textContent = E.placeEn; $('bPlaceAr').textContent = E.placeAr;
 $('wrong').innerHTML = D.wrongDates.map(x => '<s>' + esc(x) + '</s>').join('');
+if (D.colorPairs) $('colorPairs').innerHTML = D.colorPairs.map(c => '<div style="background:' + c.bg + ';color:' + c.fg + ';border:2px solid var(--ink);border-radius:14px;padding:16px 18px;font-family:Impact,Lalezar,sans-serif;font-size:20px;min-width:200px">JOIN THE FUN<div style="font-family:inherit;font-size:13px;font-family:system-ui">' + esc(c.text) + '</div></div>').join('');
+if (D.designRules) $('designRules').innerHTML = D.designRules.map(x => '<li>' + esc(x) + '</li>').join('');
 if (D.logoRules) { $('logoDo').innerHTML = D.logoRules.do.map(x => '<li>' + esc(x) + '</li>').join(''); $('logoAvoid').innerHTML = D.logoRules.avoid.map(x => '<li>' + esc(x) + '</li>').join(''); $('brandWords').textContent = D.brandWords || ''; }
 $('swatches').innerHTML = D.colors.map(c => '<button class="sw" data-hex="' + c.hex + '"><i style="background:' + c.hex + '"></i><span><b>' + esc(c.name) + '</b>' + c.hex + '</span></button>').join('');
 $('swatches').onclick = e => { const b = e.target.closest('.sw'); if (b) copy(b.dataset.hex, 'Copied ' + b.dataset.hex); };
