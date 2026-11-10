@@ -18,6 +18,9 @@ header{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:2px s
 nav{margin-inline-start:auto;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
 nav::-webkit-scrollbar{display:none}
 nav a{text-decoration:none;color:var(--ink);font-weight:600;font-size:14px;padding:7px 11px;border-radius:999px;white-space:nowrap;cursor:pointer}
+.guide{background:#fff;border:2px solid var(--ink);border-radius:16px;padding:12px 16px;margin:6px 0 16px;font-size:14px;line-height:1.6}
+.guide summary{cursor:pointer;font-weight:700;list-style:none}.guide summary::-webkit-details-marker{display:none}
+.guide summary .ar{font-weight:400;opacity:.7;margin-left:6px}.guide ol{margin:8px 0;padding-left:20px}.guide p{margin:6px 0}.guide p.ar{opacity:.8}
 nav a.on{background:var(--ink);color:var(--bg)}
 .admbtn{margin-left:4px;flex:none;font-size:11px;font-weight:700;text-decoration:none;color:var(--ink);border:1.5px solid var(--ink);border-radius:999px;padding:4px 9px;cursor:pointer;white-space:nowrap;background:#fff}
 .admbtn.on{background:var(--ink);color:var(--bg)}
@@ -108,6 +111,14 @@ function ownsTask(t){
   if (/everyone|all media|الكل/.test(o)) return true;
   return String(ME.sheet_name || ME.name).toLowerCase().split(',').map(n => n.trim()).filter(Boolean).some(n => o.includes(n) || o.split(/[^a-z\u0600-\u06ff]+/).includes(n.split(' ')[0]));
 }
+const guide = (what, steps, ar) => '<details class="guide" open><summary>ℹ️ What is this page? <span class="ar">وش هذي الصفحة؟</span></summary><p>' + what + '</p><ol>' + steps.map(x => '<li>' + x + '</li>').join('') + '</ol><p class="ar" dir="rtl">' + ar + '</p></details>';
+const GUIDES = {
+  tasksMine: guide('Your tasks for this week. Only you see them.', ['Tap <b>▶️ Start</b> when you begin a task.', 'When you finish, tap <b>📤 Submit</b>: add the file or a link (for example from the Media Files folder) and the caption if it is a post.', 'Suhad or Rashad checks it. ✅ means done. ✏️ means they wrote what to change: fix it and submit again.', 'Post nothing before it has ✅.'], 'هنا مهامك أنت بس. اضغط Start لما تبدأ، وSubmit لما تخلص. سهاد أو رشاد يراجعون: ✅ يعني خلصت، ✏️ يعني فيه تعديل مكتوب لك.'),
+  tasksAll: guide('All media tasks of the published weeks. Your own tasks have the Start and Submit buttons.', ['See who has what and how many days are left.', 'Your own tasks: <b>▶️ Start</b> and <b>📤 Submit</b> like everyone.', 'Work that was sent shows in <b>Review</b>.'], 'كل مهام التيم. مهامك أنت فيها Start وSubmit، واللي تسلّم يطلع في Review.'),
+  review: guide('Work the team sent. It waits for your OK here.', ['Open the file or link and read the caption.', 'Tap <b>✅ Approve</b> if it is good. The task becomes Done in the sheet too.', 'Tap <b>✏️ Changes</b> and write what to fix. It goes back to the person.'], 'هنا الشغل اللي سلّمه التيم. ✅ موافقة، أو ✏️ تكتب له وش يعدّل.'),
+  team: guide('How the team is doing.', ['The numbers at the top: tasks, done, waiting for review, late.', '<b>Who is doing what</b>: 🟢 online now, ⚫ offline, ⚪ has not joined yet. Under each name: their tasks and if they started.', 'The table: each person and how much is done.', '<b>🔴 Late</b>: tasks past their date.'], 'متابعة التيم: مين متصل، مين بدأ مهمته، ومين متأخر.'),
+  admin: guide('Only admins see this.', ['<b>Team status</b>: who is online and who started.', '<b>Users</b>: add a person, change a name or role, switch an account off, copy an invite link, or 👁 View as to see the site as them.', '<b>Weeks & sync</b>: take the tasks from the sheet now, and show or hide a week from the team.', '<b>Settings</b>: the link to the sheet. Normally you do not touch it.', '<b>Activity</b>: everything that happened, with time and name.'], 'لوحة الأدمن: المستخدمين، الأسابيع، الربط مع الشيت، والسجل.')
+};
 async function boot(){
   const inv = location.pathname.match(/^\/invite\/([\w-]+)/);
   if (inv) return inviteView(inv[1]);
@@ -186,7 +197,7 @@ async function tasksView(){
   try { await loadTasks(); } catch(e){ app.innerHTML = '<div class="card">' + esc(e.message) + '</div>'; return; }
   const mine = ME.role === 'member';
   const list = mine ? TASKS : TASKS;
-  let h = '<h2>' + (mine ? 'My tasks' : 'All media tasks') + '</h2><p class="lead">' + (mine ? 'Only your tasks. Submit your work here when you finish.' : 'Everything in the Marketing and Media tab.') + '</p>';
+  let h = '<h2>' + (mine ? 'My tasks' : 'All media tasks') + '</h2>' + (mine ? GUIDES.tasksMine : GUIDES.tasksAll);
   if (!list.length) h += '<div class="card">No tasks yet for you this week. 🎉</div>';
   byWeek(list).forEach(([w, ts]) => {
     const pubNote = ME.role === 'admin' && !ts[0].published ? ' <span class="pill soon">Hidden from the team</span>' : '';
@@ -231,7 +242,7 @@ function reviewDialog(k, a){
 async function reviewView(){
   await loadTasks();
   const wait = TASKS.filter(t => t.status === 'Submitted');
-  app.innerHTML = '<h2>Review</h2><p class="lead">Work waiting for your OK.</p>' + (wait.length ? wait.map(t => taskCard(t, {showOwner:true, review:true})).join('') : '<div class="card">Nothing waiting. 👌</div>');
+  app.innerHTML = '<h2>Review</h2>' + GUIDES.review + (wait.length ? wait.map(t => taskCard(t, {showOwner:true, review:true})).join('') : '<div class="card">Nothing waiting. 👌</div>');
   bindTaskActions();
 }
 async function teamView(){
@@ -240,18 +251,18 @@ async function teamView(){
   TASKS.forEach(t => (t.owner || '—').split(/,| and /).map(s => s.trim()).filter(Boolean).forEach(o => { (owners[o] = owners[o] || []).push(t); }));
   const late = TASKS.filter(t => t.status !== 'Done' && left(t.due) !== null && left(t.due) < 0);
   const done = TASKS.filter(t => t.status === 'Done').length;
-  let h = '<h2>Team</h2><div class="stat" style="margin:12px 0 18px"><div><b>' + TASKS.length + '</b>tasks</div><div><b>' + done + '</b>done</div><div><b>' + TASKS.filter(t => t.status === 'Submitted').length + '</b>waiting review</div><div><b style="color:var(--red)">' + late.length + '</b>late</div></div>';
+  let h = '<h2>Team</h2>' + GUIDES.team + '<div class="stat" style="margin:12px 0 18px"><div><b>' + TASKS.length + '</b>tasks</div><div><b>' + done + '</b>done</div><div><b>' + TASKS.filter(t => t.status === 'Submitted').length + '</b>waiting review</div><div><b style="color:var(--red)">' + late.length + '</b>late</div></div>';
   h += '<div class="card"><table><tr><th>Person</th><th>Tasks</th><th>Done</th><th>Progress</th></tr>' + Object.entries(owners).map(([o, ts]) => {
     const d = ts.filter(t => t.status === 'Done').length, p = Math.round(100 * d / ts.length);
     return '<tr><td><b>' + esc(o) + '</b></td><td>' + ts.length + '</td><td>' + d + '</td><td style="min-width:120px">' + p + '%<div class="bar2"><i style="width:' + p + '%"></i></div></td></tr>'; }).join('') + '</table></div>';
   if (late.length) h += '<h3>🔴 Late</h3>' + late.map(t => taskCard(t, {showOwner:true})).join('');
-  if (['admin','head'].includes(ME.role)) h = h.replace('<h2>Team</h2>', '<h2>Team</h2><div id="ab" style="margin-top:12px"></div>');
+  if (['admin','head'].includes(ME.role)) h = h.replace(GUIDES.team, GUIDES.team + '<div id="ab" style="margin-top:12px"></div>');
   app.innerHTML = h;
   if (['admin','head'].includes(ME.role)) aTeam();
 }
 
 async function adminView(){
-  app.innerHTML = '<h2>Admin</h2><p class="lead">Only you see this.</p><div class="tabs" id="at">' +
+  app.innerHTML = '<h2>Admin</h2>' + GUIDES.admin + '<div class="tabs" id="at">' +
     [['team','👀 Team status'],['users','👤 Users'],['weeks','🗓️ Weeks & sync'],['settings','⚙️ Settings'],['log','🕓 Activity']].map(([k,l]) => '<button data-t="' + k + '" class="' + (k === AT ? 'on' : '') + '">' + l + '</button>').join('') + '</div><div id="ab"></div>';
   $('#at').onclick = e => { const b = e.target.closest('button'); if (!b) return; AT = b.dataset.t; adminView(); };
   ({team:aTeam, users:aUsers, weeks:aWeeks, settings:aSettings, log:aLog})[AT]();

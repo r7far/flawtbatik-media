@@ -26,6 +26,13 @@ header{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:2px s
 nav{margin-inline-start:auto;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;min-width:0}
 nav::-webkit-scrollbar{display:none}
 nav a{text-decoration:none;color:var(--ink);font-weight:600;font-size:14px;padding:8px 12px;border-radius:999px;border:2px solid transparent;white-space:nowrap}
+.guide{background:#fff;border:2px solid var(--ink);border-radius:16px;padding:12px 16px;margin:6px 0 16px;font-size:14px;line-height:1.6}
+.guide summary{cursor:pointer;font-weight:700;list-style:none}
+.guide summary::-webkit-details-marker{display:none}
+.guide summary .ar{font-weight:400;opacity:.7;margin-left:6px}
+.guide ol{margin:8px 0;padding-left:20px}
+.guide p{margin:6px 0}
+.guide p.ar{opacity:.8}
 nav a.on{background:var(--ink);color:var(--bg)}
 .teambtn[hidden]{display:none}
 .teambtn{flex:none;margin-left:6px;font-size:12px;font-weight:700;text-decoration:none;color:var(--bg);background:var(--ink);border-radius:999px;padding:6px 11px;white-space:nowrap}
@@ -195,6 +202,7 @@ th{font-size:13px;color:var(--muted);font-weight:700}
 
 <!-- ============ HOME ============ -->
 <section data-page="home">
+  <details class="guide" open><summary>ℹ️ What is this page? <span class="ar">وش هذي الصفحة؟</span></summary><p>The start page. It shows how many days are left, and this week's tasks for the whole team.</p><ol><li>Read this week's tasks and their dates.</li><li>Open <b>My tasks</b> on the team site to start and submit yours.</li><li>Use the tiles at the bottom to open each tool.</li></ol><p class="ar" dir="rtl">صفحة البداية: كم يوم باقي، ومهام هذا الأسبوع للتيم. مهامك أنت وتسليمها في موقع التيم.</p></details>
   <div class="hero">
     <div class="card facts">
       <h1 id="evName"></h1>
@@ -229,7 +237,8 @@ th{font-size:13px;color:var(--muted);font-weight:700}
 <!-- ============ GRID ============ -->
 <section data-page="grid">
   <h2>Grid Preview</h2>
-  <p class="lead">Upload one design. It gets split into posts so your profile shows one big picture. Your image stays on your phone: nothing is uploaded.</p>
+  <details class="guide" open><summary>ℹ️ What is this page? <span class="ar">وش هذي الصفحة؟</span></summary><p>For one big design that is split into 3, 6 or 9 Instagram posts, so the profile shows one picture.</p><ol><li>Tap <b>Choose your design</b> and pick the big design from your phone.</li><li>Choose how many posts (3, 6 or 9) and the shape.</li><li>Check the preview: it looks like our profile.</li><li>Tap <b>Download all posts</b>. The files are numbered.</li><li>Post <b>post-1 first</b>, then post-2, and so on. The last one ends top left.</li></ol><p class="ar" dir="rtl">لو عندك تصميم كبير ينقسم على 3 أو 6 أو 9 بوستات: اختاره، شوف الشكل، نزّل البوستات، وانشرها بالترتيب من 1. الصورة ما تطلع من جوالك.</p></details>
+  
   <div class="tool">
     <div class="card">
       <label class="drop" id="drop">
@@ -261,7 +270,8 @@ th{font-size:13px;color:var(--muted);font-weight:700}
 <!-- ============ STUDIO ============ -->
 <section data-page="studio">
   <h2>Studio</h2>
-  <p class="lead">Ready-made things you can download and post.</p>
+  <details class="guide" open><summary>ℹ️ What is this page? <span class="ar">وش هذي الصفحة؟</span></summary><p>Ready things you make in one tap: the countdown story, a QR code, and a check that your story text is not hidden.</p><ol><li><b>Countdown story</b>: write the days left (it is filled for today), pick the language and the color, tap <b>Download story</b>, post it.</li><li><b>QR code</b>: paste a link (Instagram, tickets, a form). Download the QR and use it in a design or print it.</li><li><b>Story safe zones</b>: choose your story design. If text is in the red parts, move it: Instagram covers them.</li><li><b>Sizes</b>: the right size for each kind of post.</li></ol><p class="ar" dir="rtl">أدوات جاهزة: ستوري العدّ التنازلي بضغطة، كود QR لأي رابط، وتشييك إن الكلام في الستوري ما يتغطى، ومقاسات البوستات.</p></details>
+  
   <div class="stack">
     <div class="card">
       <h3>⏳ Countdown story</h3>
@@ -307,28 +317,29 @@ th{font-size:13px;color:var(--muted);font-weight:700}
 <!-- ============ CAPTIONS ============ -->
 <section data-page="captions">
   <h2>Captions</h2>
-  <p class="lead">Templates already have the right date and place. You write the idea.</p>
+  <details class="guide" open><summary>ℹ️ What is this page? <span class="ar">وش هذي الصفحة؟</span></summary><p>Help to write the text under a post, with the right date, place and hashtags. Then a short check before posting.</p><ol><li><b>1. Choose a template</b>: what kind of post it is (save the date, countdown, or empty).</li><li><b>2. Write your idea</b> in the box. The date and place are already in it. Don't change them.</li><li><b>3. Tap hashtags</b> to add them (3 to 5 is best).</li><li><b>4. Tap Copy caption</b> and paste it in Instagram.</li><li><b>5. Before you post</b>: tick every line on the right. Post only when it says ready, and only after ✅ on the team site.</li><li><b>DM replies</b>: when people ask “where?” or “when?”, copy the ready answer.</li></ol><p class="ar" dir="rtl">تكتب الكابشن هنا: اختر القالب، اكتب فكرتك (التاريخ والمكان جاهزين)، اختر الهاشتاقات، انسخ، وشيّك القائمة قبل النشر. وفيه ردود جاهزة للخاص.</p></details>
+  
   <div class="stack">
     <div class="card">
-      <h3>✍️ Caption helper</h3>
-      <label class="lbl">Template</label>
+      <h3>✍️ Write a caption</h3>
+      <label class="lbl">1. What kind of post?</label>
       <select id="capTpl"></select>
-      <label class="lbl">Caption</label>
+      <label class="lbl">2. Write your idea here (date and place are already in)</label>
       <textarea id="capText" dir="auto"></textarea>
-      <label class="lbl">Hashtags <span class="muted small">(tap to add or remove, keep it to 3–5)</span></label>
+      <label class="lbl">3. Tap hashtags to add them <span class="muted small">(3 to 5)</span></label>
       <div class="tags" id="capTags"></div>
       <div class="meter"><span id="capCount"></span><span id="capTagCount"></span></div>
-      <div class="center" style="justify-content:flex-start"><button class="btn" id="capCopy">📋 Copy caption</button></div>
+      <div class="center" style="justify-content:flex-start"><button class="btn" id="capCopy">📋 4. Copy caption</button></div>
     </div>
     <div class="two">
       <div class="card">
-        <h3>✅ Before you post</h3>
+        <h3>✅ 5. Before you post</h3>
         <ul class="checks" id="checks"></ul>
         <div class="ready no" id="ready"></div>
         <div class="center" style="justify-content:flex-start"><button class="btn ghost sm" id="checkReset">Reset for the next post</button></div>
       </div>
       <div class="card">
-        <h3>💬 Replies for DMs</h3>
+        <h3>💬 Ready replies for DMs and comments</h3>
         <p class="muted small" style="margin:0 0 10px">When people ask in DMs or comments, copy the answer.</p>
         <div class="stack" style="gap:10px" id="dms"></div>
       </div>
@@ -339,7 +350,8 @@ th{font-size:13px;color:var(--muted);font-weight:700}
 <!-- ============ EVENT ============ -->
 <section data-page="event">
   <h2>Event</h2>
-  <p class="lead">What you need to know to post about the event.</p>
+  <details class="guide" open><summary>ℹ️ What is this page? <span class="ar">وش هذي الصفحة؟</span></summary><p>What you need to know to post about the event: the tournaments, the media team, and the shots to take on 24 and 25 Dec.</p><ol><li>Read the tournaments before you post about them. No fees or prizes until they are confirmed.</li><li>On event days, tick each shot as you take it (saved on your phone).</li></ol><p class="ar" dir="rtl">معلومات الإيفنت للنشر: البطولات، فريق الميديا، وقائمة اللقطات يوم الإيفنت. لا تنشر رسوم أو جوائز قبل ما تتأكد.</p></details>
+  
   <div class="stack">
     <div class="card">
       <h3>🏆 Tournaments</h3>
@@ -364,7 +376,8 @@ th{font-size:13px;color:var(--muted);font-weight:700}
 <!-- ============ BRAND ============ -->
 <section data-page="brand">
   <h2>Brand Kit</h2>
-  <p class="lead">Use these in every post so everything looks like one brand.</p>
+  <details class="guide" open><summary>ℹ️ What is this page? <span class="ar">وش هذي الصفحة؟</span></summary><p>The logo, colors, fonts and the right way to write the date and place, so every post looks the same.</p><ol><li>Download the logo from here only.</li><li>Tap a color to copy its code.</li><li>Always write the date and place exactly like this. Never use the old dates in red.</li></ol><p class="ar" dir="rtl">الشعار والألوان والخطوط، وطريقة كتابة التاريخ والمكان. الألوان الحالية مؤقتة لين يوصل البراند كيت الرسمي من رؤى.</p></details>
+  
   <div class="two">
     <div class="card logo-box">
       <img src="assets/logo.jpeg" alt="Fla w Tbatik logo">
@@ -380,7 +393,7 @@ th{font-size:13px;color:var(--muted);font-weight:700}
       <div class="wrong" id="wrong"></div>
     </div>
     <div class="card full">
-      <b>Colors</b> <span class="muted small">(tap to copy)</span>
+      <b>Colors</b> <span class="muted small">(tap to copy · temporary until the official brand kit from Roua)</span>
       <div class="swatches" id="swatches"></div>
     </div>
     <div class="card full">
@@ -393,7 +406,8 @@ th{font-size:13px;color:var(--muted);font-weight:700}
 <!-- ============ BOARD ============ -->
 <section data-page="board">
   <h2>Board</h2>
-  <p class="lead">Where the team shares files, ideas and the content plan.</p>
+  <details class="guide" open><summary>ℹ️ What is this page? <span class="ar">وش هذي الصفحة؟</span></summary><p>Links to the shared files and the Media Board (a Google Sheet with one tab for each thing we track).</p><ol><li><b>Media Files</b>: put every design, photo and video here.</li><li><b>Ideas</b>: write your ideas any time. We choose in the meeting.</li><li><b>Content Calendar</b>: what goes out and when. Suhad fills it.</li><li><b>Coverage</b>: who covers what on event days.</li><li><b>My tasks</b>: your tasks and where you submit your work.</li></ol><p class="ar" dir="rtl">روابط الملفات المشتركة والبورد. أي شي تعبيه في البورد يشوفه التيم كله.</p></details>
+  
   <div class="card">
     <div class="boardrow"><div class="ic">📁</div><div><b>Media Files</b> <span class="muted small">(Google Drive folder)</span><p class="muted small" style="margin:2px 0 8px">Put every design, photo and video here. Then send the link with your task on the team site.</p><a class="btn sm" id="lnFolder" target="_blank" rel="noopener">Open folder</a></div></div>
     <div class="boardrow"><div class="ic">💡</div><div><b>Ideas Box</b><p class="muted small" style="margin:2px 0 8px">Write your own ideas any time. We choose together in the meeting.</p><a class="btn sm" data-board="667328756" target="_blank" rel="noopener">Open Ideas</a></div></div>
