@@ -47,6 +47,8 @@ def init_db():
         CREATE TABLE IF NOT EXISTS subs(id INTEGER PRIMARY KEY, task_key TEXT, user_id INTEGER, link TEXT, file TEXT,
           file_name TEXT, note TEXT, caption TEXT, created TEXT, review TEXT, review_by INTEGER, review_note TEXT, reviewed TEXT);
         CREATE TABLE IF NOT EXISTS log(id INTEGER PRIMARY KEY, at TEXT, user_id INTEGER, what TEXT);
+        CREATE TABLE IF NOT EXISTS ideas(id INTEGER PRIMARY KEY, at TEXT, user_id INTEGER, kind TEXT, text TEXT, link TEXT, status TEXT DEFAULT '', reply TEXT DEFAULT '');
+        CREATE TABLE IF NOT EXISTS idea_votes(idea_id INTEGER, user_id INTEGER, PRIMARY KEY(idea_id, user_id));
         CREATE TABLE IF NOT EXISTS notes(id INTEGER PRIMARY KEY, at TEXT, about INTEGER, author INTEGER, cat TEXT, text TEXT);
         ''')
         cols = [r['name'] for r in c.execute('PRAGMA table_info(users)')]
@@ -454,6 +456,62 @@ class H(BaseHTTPRequestHandler):
                 c.execute('UPDATE users SET pw=?, invite=NULL WHERE id=?', (hash_pw(b['password']), iu['id']))
             log(iu['id'], 'set own password from invite')
             return self.send(200, {'ok': True, 'username': iu['username']})
+
+        # ---- ideas box (everyone on the team)
+        if p == '/api/ideas' or p.startswith('/api/ideas/'):
+            u = self.need()
+            if not u:
+                return
+            lead = u['role'] in ('admin', 'head')
+            if p == '/api/ideas' and method == 'GET':
+                with db() as c:
+                    rows = [dict(r) for r in c.execute('''SELECT i.*, us.name AS author,
+                        (SELECT COUNT(*) FROM idea_votes v WHERE v.idea_id=i.id) AS votes,
+                        (SELECT COUNT(*) FROM idea_votes v WHERE v.idea_id=i.id AND v.user_id=?) AS mine
+                        FROM ideas i LEFT JOIN users us ON us.id=i.user_id ORDER BY i.id DESC''', (u['id'],))]
+                for r in rows:
+                    r['own'] = r['user_id'] == u['id']
+                return self.send(200, {'ideas': rows, 'lead': lead})
+            if p == '/api/ideas' and method == 'POST':
+                text = (b.get('text') or '').strip()[:3000]
+                link = (b.get('link') or '').strip()[:500]
+                kind = b.get('kind') if b.get('kind') in ('Post', 'Grid', 'Carousel', 'Reel', 'Story', 'Event idea', 'Other') else 'Other'
+                if not text:
+                    return self.err(400, 'Write your idea first')
+                if link and not re.match(r'^https?://', link):
+                    return self.err(400, 'The link must start with https://')
+                with db() as c:
+                    c.execute('INSERT INTO ideas(at,user_id,kind,text,link) VALUES(?,?,?,?,?)', (now_iso(), u['id'], kind, text, link))
+                log(u['id'], 'added an idea')
+                return self.send(200, {'ok': True})
+            m = re.match(r'^/api/ideas/(\d+)/(vote|status|delete)$', p)
+            if not m or method != 'POST':
+                return self.err(404, 'Not found')
+            iid, act = int(m.group(1)), m.group(2)
+            with db() as c:
+                idea = c.execute('SELECT * FROM ideas WHERE id=?', (iid,)).fetchone()
+                if not idea:
+                    return self.err(404, 'Not found')
+                if act == 'vote':
+                    if c.execute('SELECT 1 FROM idea_votes WHERE idea_id=? AND user_id=?', (iid, u['id'])).fetchone():
+                        c.execute('DELETE FROM idea_votes WHERE idea_id=? AND user_id=?', (iid, u['id']))
+                    else:
+                        c.execute('INSERT INTO idea_votes VALUES(?,?)', (iid, u['id']))
+                    return self.send(200, {'ok': True})
+                if act == 'status':
+                    if not lead:
+                        return self.err(403, 'Not allowed')
+                    st = b.get('status') if b.get('status') in ('', 'Chosen', 'Later', 'Not now') else ''
+                    c.execute('UPDATE ideas SET status=?, reply=? WHERE id=?', (st, (b.get('reply') or '').strip()[:1000], iid))
+            if act == 'status':
+                log(u['id'], 'marked an idea: ' + (st or 'open'))
+                return self.send(200, {'ok': True})
+                if act == 'delete':
+                    if not (lead or idea['user_id'] == u['id']):
+                        return self.err(403, 'Not allowed')
+                    c.execute('DELETE FROM ideas WHERE id=?', (iid,))
+                    c.execute('DELETE FROM idea_votes WHERE idea_id=?', (iid,))
+                    return self.send(200, {'ok': True})
 
         # ---- tasks
         if p == '/api/tasks':

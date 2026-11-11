@@ -88,7 +88,8 @@ async function api(path, body){
   return j;
 }
 const TOOLS = '/tools/';
-let ME = null, VIEW = new URLSearchParams(location.search).get('admin') ? 'admin' : 'tasks', AT = 'team';
+const _q = new URLSearchParams(location.search);
+let ME = null, VIEW = _q.get('admin') ? 'admin' : (['ideas','tasks','review','team'].includes(_q.get('v')) ? _q.get('v') : 'tasks'), AT = 'team';
 if (location.search) history.replaceState(null, '', location.pathname);
 setInterval(() => { if (ME && !document.hidden) fetch('/api/me').catch(() => {}); }, 60000);
 const today = () => new Date(new Date().toLocaleDateString('en-CA', {timeZone:'Asia/Riyadh'}) + 'T00:00:00Z');
@@ -113,12 +114,32 @@ function ownsTask(t){
 }
 const guide = (what, steps, ar) => '<details class="guide" open><summary>ℹ️ What is this page? <span class="ar">وش هذي الصفحة؟</span></summary><p>' + what + '</p><ol>' + steps.map(x => '<li>' + x + '</li>').join('') + '</ol><p class="ar" dir="rtl">' + ar + '</p></details>';
 const GUIDES = {
+  ideas: guide('A box for everyone\'s ideas: posts, grids, carousels, reels, stories, or ideas for the event. Everyone on the team sees them.', ['Choose the type and write your idea. You can add a link (a sketch, a Canva design or an example from Instagram).', 'Tap <b>👍</b> on the ideas you like. The ideas with the most 👍 go to the top.', 'In the meeting we choose together. Suhad or Rashad mark an idea <b>⭐ Chosen</b>, <b>⏳ Later</b> or <b>Not now</b>, and can add a short note.', 'Follow the brand rules (Tools › Brand): one clear message, official colors, the logo as it is.'], 'صندوق أفكار للتيم كله: اكتب فكرتك، وصوّت 👍 على اللي تعجبك، ونختار في الاجتماع.'),
   tasksMine: guide('Your tasks for this week. Only you see them.', ['Tap <b>▶️ Start</b> when you begin a task.', 'When you finish, tap <b>📤 Submit</b>: add the file or a link (for example from the Media Files folder) and the caption if it is a post.', 'Suhad or Rashad checks it. ✅ means done. ✏️ means they wrote what to change: fix it and submit again.', 'Post nothing before it has ✅.'], 'هنا مهامك أنت بس. اضغط Start لما تبدأ، وSubmit لما تخلص. سهاد أو رشاد يراجعون: ✅ يعني خلصت، ✏️ يعني فيه تعديل مكتوب لك.'),
   tasksAll: guide('All media tasks of the published weeks. Your own tasks have the Start and Submit buttons.', ['See who has what and how many days are left.', 'Your own tasks: <b>▶️ Start</b> and <b>📤 Submit</b> like everyone.', 'Work that was sent shows in <b>Review</b>.'], 'كل مهام التيم. مهامك أنت فيها Start وSubmit، واللي تسلّم يطلع في Review.'),
   review: guide('Work the team sent. It waits for your OK here.', ['Open the file or link and read the caption.', 'Check the brand rules: the official logo is not changed, recolored or cut, and has empty space around it (10%). Not on a busy background without a blur. Official colors (blue with white, cream with black). Impact / Farah fonts. A short, clear message in the middle. Not crowded. Text big enough to read.', 'Tap <b>✅ Approve</b> if it is good. The task becomes Done in the sheet too.', 'Tap <b>✏️ Changes</b> and write what to fix. It goes back to the person.'], 'هنا الشغل اللي سلّمه التيم. ✅ موافقة، أو ✏️ تكتب له وش يعدّل.'),
   team: guide('How the team is doing.', ['The numbers at the top: tasks, done, waiting for review, late.', '<b>Who is doing what</b>: 🟢 online now, ⚫ offline, ⚪ has not joined yet. Under each name: their tasks and if they started.', 'The table: each person and how much is done.', '<b>🔴 Late</b>: tasks past their date.'], 'متابعة التيم: مين متصل، مين بدأ مهمته، ومين متأخر.'),
   admin: guide('Only admins see this.', ['<b>Team status</b>: who is online and who started.', '<b>Team notes</b>: your private notes about each person, to decide after the event who continues.', '<b>Users</b>: add a person, change a name or role, switch an account off, copy an invite link, or 👁 View as to see the site as them.', '<b>Weeks & sync</b>: take the tasks from the sheet now, and show or hide a week from the team.', '<b>Settings</b>: the link to the sheet. Normally you do not touch it.', '<b>Activity</b>: everything that happened, with time and name.'], 'لوحة الأدمن: المستخدمين، الأسابيع، الربط مع الشيت، والسجل.')
 };
+async function ideasView(){
+  const {ideas, lead} = await api('/api/ideas');
+  const kinds = ['Post','Grid','Carousel','Reel','Story','Event idea','Other'];
+  const stPill = st => st === 'Chosen' ? '<span class="pill done">⭐ Chosen</span>' : st === 'Later' ? '<span class="pill soon">⏳ Later</span>' : st === 'Not now' ? '<span class="pill">Not now</span>' : '';
+  const sorted = ideas.slice().sort((a, b) => (b.status === 'Chosen') - (a.status === 'Chosen') || b.votes - a.votes || b.id - a.id);
+  app.innerHTML = '<h2>💡 Ideas Box</h2>' + GUIDES.ideas +
+    '<div class="card"><h3>Add your idea</h3><div class="grid2"><div><label>Type</label><select id="ik">' + kinds.map(k => '<option>' + k + '</option>').join('') + '</select></div><div><label>Link (optional)</label><input id="il" placeholder="https://"></div></div>' +
+    '<label>Your idea</label><textarea id="it" rows="3" placeholder="e.g. A grid of 6 posts that shows the place, one zone in each post."></textarea><div class="row"><button class="btn" id="iadd">💡 Add idea</button></div></div>' +
+    (sorted.length ? sorted.map(i => '<div class="card"><div class="row" style="margin:0;justify-content:space-between;align-items:flex-start"><div><span class="pill">' + esc(i.kind) + '</span> ' + stPill(i.status) + '<div class="small muted" style="margin-top:4px">' + esc(i.author || '') + ' · ' + esc(i.at) + '</div></div>' +
+      '<button class="btn ' + (i.mine ? '' : 'ghost') + '" data-vote="' + i.id + '">👍 ' + i.votes + '</button></div>' +
+      '<p style="margin:10px 0 0;white-space:pre-wrap">' + esc(i.text) + '</p>' + (i.link ? '<p style="margin:6px 0 0"><a href="' + esc(i.link) + '" target="_blank" rel="noopener">🔗 Open link</a></p>' : '') +
+      (i.reply ? '<p class="small" style="margin:8px 0 0;background:var(--bg);border-radius:10px;padding:8px 10px">💬 ' + esc(i.reply) + '</p>' : '') +
+      ((lead || i.own) ? '<div class="row" style="margin-top:10px">' + (lead ? ['Chosen','Later','Not now',''].map(st => '<button class="btn ghost" data-st="' + i.id + '" data-v="' + st + '">' + (st === 'Chosen' ? '⭐ Chosen' : st === 'Later' ? '⏳ Later' : st === 'Not now' ? 'Not now' : '↩ Open') + '</button>').join('') : '') + '<button class="btn ghost" data-delidea="' + i.id + '">🗑</button></div>' : '') +
+      '</div>').join('') : '<div class="card"><p class="muted">No ideas yet. Be the first! 💡</p></div>');
+  $('#iadd').onclick = async () => { try { await api('/api/ideas', {kind:$('#ik').value, link:$('#il').value, text:$('#it').value}); toast('Idea added 💡'); ideasView(); } catch(e){ toast(e.message); } };
+  app.querySelectorAll('[data-vote]').forEach(b => b.onclick = async () => { await api('/api/ideas/' + b.dataset.vote + '/vote', {}); ideasView(); });
+  app.querySelectorAll('[data-st]').forEach(b => b.onclick = async () => { const reply = b.dataset.v ? (prompt('A short note for the team (optional):') || '') : ''; await api('/api/ideas/' + b.dataset.st + '/status', {status:b.dataset.v, reply}); ideasView(); });
+  app.querySelectorAll('[data-delidea]').forEach(b => b.onclick = async () => { if (!confirm('Delete this idea?')) return; await api('/api/ideas/' + b.dataset.delidea + '/delete', {}); ideasView(); });
+}
 async function boot(){
   const inv = location.pathname.match(/^\/invite\/([\w-]+)/);
   if (inv) return inviteView(inv[1]);
@@ -131,18 +152,19 @@ async function boot(){
   if (!ME) return loginView();
   if (me.maintenance && ME.role !== 'admin') { app.innerHTML = '<div class="card center"><h3>🛠️ Maintenance</h3><p>The site is closed for a short time.</p></div>'; return; }
   if (VIEW === 'admin' && ME.role !== 'admin') VIEW = 'tasks';
+  if (['review','team'].includes(VIEW) && !['admin','head'].includes(ME.role)) VIEW = 'tasks';
   drawNav(); show(VIEW);
 }
 function drawNav(){
   const items = [['tasks', ME.role === 'member' ? 'My tasks' : 'Tasks']];
   if (['admin','head'].includes(ME.role)) items.push(['review','Review'], ['team','Team']);
-  items.push(['tools','Tools'], ['me', '👤 ' + ME.name.split(' ')[0]]);
+  items.push(['ideas','💡 Ideas'], ['tools','Tools'], ['me', '👤 ' + ME.name.split(' ')[0]]);
   $('#nav').innerHTML = items.map(([k, l]) => '<a data-v="' + k + '" class="' + (k === VIEW ? 'on' : '') + '">' + esc(l) + '</a>').join('');
   const adm = $('#adm'); adm.hidden = ME.role !== 'admin'; adm.classList.toggle('on', VIEW === 'admin');
   adm.onclick = () => { VIEW = 'admin'; drawNav(); show(VIEW); };
   $('#nav').onclick = e => { const a = e.target.closest('a'); if (!a) return; if (a.dataset.v === 'tools') { location.href = TOOLS + '#home'; return; } VIEW = a.dataset.v; drawNav(); show(VIEW); };
 }
-function show(v){ ({tasks:tasksView, review:reviewView, team:teamView, admin:adminView, me:meView})[v](); window.scrollTo(0,0); }
+function show(v){ ({tasks:tasksView, review:reviewView, team:teamView, ideas:ideasView, admin:adminView, me:meView})[v](); window.scrollTo(0,0); }
 
 function setupView(){
   app.innerHTML = '<div class="card center"><h2>First setup</h2><p class="muted">Create the admin account (only works from the home network, once).</p>' +
