@@ -140,6 +140,24 @@ async function ideasView(){
   app.querySelectorAll('[data-st]').forEach(b => b.onclick = async () => { const reply = b.dataset.v ? (prompt('A short note for the team (optional):') || '') : ''; await api('/api/ideas/' + b.dataset.st + '/status', {status:b.dataset.v, reply}); ideasView(); });
   app.querySelectorAll('[data-delidea]').forEach(b => b.onclick = async () => { if (!confirm('Delete this idea?')) return; await api('/api/ideas/' + b.dataset.delidea + '/delete', {}); ideasView(); });
 }
+// File viewer: opens a submitted file inside the site, with a close button (no getting stuck on phones).
+function viewFile(name){
+  const url = '/files/' + encodeURIComponent(name), ext = (name.split('.').pop() || '').toLowerCase();
+  let body;
+  if (['jpg','jpeg','png','gif','webp','heic'].includes(ext)) body = '<img src="' + url + '" style="max-width:100%;max-height:75vh;display:block;margin:0 auto;border-radius:10px">';
+  else if (['mp4','mov','webm','m4v'].includes(ext)) body = '<video src="' + url + '" controls playsinline style="max-width:100%;max-height:75vh;display:block;margin:0 auto;border-radius:10px"></video>';
+  else if (ext === 'pdf') body = '<iframe src="' + url + '" style="width:100%;height:75vh;border:0;border-radius:10px;background:#fff"></iframe>';
+  else body = '<p class="muted">This file can\'t be shown here. Use Download.</p>';
+  let ov = document.getElementById('fileov');
+  if (!ov) { ov = document.createElement('div'); ov.id = 'fileov'; document.body.appendChild(ov); }
+  ov.innerHTML = '<div style="position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:flex;flex-direction:column;padding:max(16px,env(safe-area-inset-top)) 16px 16px">' +
+    '<div style="display:flex;gap:8px;justify-content:space-between;align-items:center;margin-bottom:10px"><a class="btn ghost" href="' + url + '" download style="background:#fff">⬇ Download</a>' +
+    '<button class="btn" id="fileclose" style="font-size:18px;padding:8px 16px">✕ Close</button></div><div style="flex:1;overflow:auto;display:flex;align-items:center;justify-content:center">' + body + '</div></div>';
+  const close = () => { ov.innerHTML = ''; document.removeEventListener('keydown', esc1); };
+  const esc1 = e => { if (e.key === 'Escape') close(); };
+  document.getElementById('fileclose').onclick = close; document.addEventListener('keydown', esc1);
+}
+document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('a[data-view]'); if (!a) return; e.preventDefault(); viewFile(a.dataset.view); });
 async function boot(){
   const inv = location.pathname.match(/^\/invite\/([\w-]+)/);
   if (inv) return inviteView(inv[1]);
@@ -195,7 +213,7 @@ function subsHtml(t){
   if (!t.subs.length) return '';
   return '<div class="subs"><b class="small">Submissions</b>' + t.subs.map(s =>
     '<div class="sub"><div class="small muted">' + esc(s.by_name || '') + ' · ' + esc(s.created) + '</div>' +
-    (s.file ? '<div>📎 <a href="/files/' + esc(s.file) + '" target="_blank">' + esc(s.file_name || 'file') + '</a></div>' : '') +
+    (s.file ? '<div>📎 <a href="/files/' + esc(s.file) + '" data-view="' + esc(s.file) + '">' + esc(s.file_name || 'file') + '</a></div>' : '') +
     (s.link ? '<div>🔗 <a href="' + esc(s.link) + '" target="_blank" rel="noopener">link</a></div>' : '') +
     (s.note ? '<div>' + esc(s.note) + '</div>' : '') + (s.caption ? '<div class="small"><b>Caption:</b> ' + esc(s.caption) + '</div>' : '') +
     (s.review ? '<div class="small" style="margin-top:4px"><b>' + (s.review === 'approve' ? '✅ Approved' : '✏️ Changes') + '</b> ' + esc(s.review_note || '') + '</div>' : '') +

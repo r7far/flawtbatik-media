@@ -362,8 +362,23 @@ class H(BaseHTTPRequestHandler):
             s = c.execute('SELECT * FROM subs WHERE file=?', (name,)).fetchone()
         if not s or (u['role'] == 'member' and s['user_id'] != u['id']):
             return self.err(403, 'Not allowed')
+        ctype = mimetypes.guess_type(f)[0] or 'application/octet-stream'
+        size = os.path.getsize(f)
+        rng = re.match(r'^bytes=(\d*)-(\d*)$', self.headers.get('Range') or '')
         with open(f, 'rb') as fh:
-            self.send(200, ctype=mimetypes.guess_type(f)[0] or 'application/octet-stream', body=fh.read())
+            if rng and (rng.group(1) or rng.group(2)):
+                # Range requests, so videos play on iPhone.
+                if rng.group(1):
+                    start = int(rng.group(1)); end = int(rng.group(2)) if rng.group(2) else size - 1
+                else:
+                    start = max(0, size - int(rng.group(2))); end = size - 1
+                end = min(end, size - 1)
+                if start > end:
+                    return self.send(416, {'error': 'Bad range'}, headers={'Content-Range': 'bytes */%d' % size})
+                fh.seek(start)
+                return self.send(206, ctype=ctype, body=fh.read(end - start + 1),
+                                 headers={'Content-Range': 'bytes %d-%d/%d' % (start, end, size), 'Accept-Ranges': 'bytes'})
+            self.send(200, ctype=ctype, body=fh.read(), headers={'Accept-Ranges': 'bytes'})
 
     def api(self, method, p):
         R = lambda pat: re.fullmatch(pat, p)
