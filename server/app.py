@@ -54,7 +54,7 @@ def init_db():
         cols = [r['name'] for r in c.execute('PRAGMA table_info(users)')]
         if 'invite' not in cols:
             c.execute('ALTER TABLE users ADD COLUMN invite TEXT')
-        for col in ('last_seen REAL', 'last_login TEXT', 'last_tasks REAL'):
+        for col in ('last_seen REAL', 'last_login TEXT', 'last_tasks REAL', 'ntfy TEXT', 'alerts INTEGER DEFAULT 1', 'last_alert_login REAL'):
             if col.split()[0] not in cols:
                 c.execute('ALTER TABLE users ADD COLUMN ' + col)
 
@@ -199,6 +199,42 @@ def push_status(task, status, note=None):
 
 def owners_of(task):
     return task['owner'] or ''
+
+
+# ---- phone alerts (ntfy). Each person has their own private channel name.
+def user_topic(uid):
+    with db() as c:
+        r = c.execute('SELECT ntfy FROM users WHERE id=?', (uid,)).fetchone()
+        if r and r['ntfy']:
+            return r['ntfy']
+        t = 'ftb-' + secrets.token_hex(10)
+        c.execute('UPDATE users SET ntfy=? WHERE id=?', (t, uid))
+        return t
+
+
+def _ntfy(topic, title, msg, click, tags):
+    try:
+        body = json.dumps({'topic': topic, 'title': title, 'message': msg, 'click': click, 'tags': tags}).encode()
+        urllib.request.urlopen(urllib.request.Request('https://ntfy.sh/', data=body, headers={'Content-Type': 'application/json'}), timeout=10)
+    except Exception as e:
+        print('ntfy failed:', e, flush=True)
+
+
+def alert(user_ids, title, msg, view='tasks', tags=None, skip=None):
+    """Send a phone alert to these users (if they turned alerts on). Runs in the background."""
+    base = public_url() or ''
+    click = base + '/?v=' + view if base else ''
+    with db() as c:
+        rows = c.execute('SELECT id FROM users WHERE active=1 AND alerts=1 AND id IN (%s)' % ','.join('?' * len(user_ids)), list(user_ids)).fetchall() if user_ids else []
+    for r in rows:
+        if r['id'] == skip:
+            continue
+        threading.Thread(target=_ntfy, args=(user_topic(r['id']), title, msg, click, tags or []), daemon=True).start()
+
+
+def lead_ids(roles=('admin', 'head')):
+    with db() as c:
+        return [r['id'] for r in c.execute('SELECT id FROM users WHERE active=1 AND role IN (%s)' % ','.join('?' * len(roles)), list(roles))]
 
 
 def is_mine(task, user):
@@ -413,6 +449,10 @@ class H(BaseHTTPRequestHandler):
             with db() as c:
                 c.execute('UPDATE users SET last_login=?, last_seen=? WHERE id=?', (now_iso(), time.time(), u['id']))
             log(u['id'], 'logged in')
+            if u['role'] != 'admin' and time.time() - (u['last_alert_login'] or 0) > 3 * 3600:
+                with db() as c:
+                    c.execute('UPDATE users SET last_alert_login=? WHERE id=?', (time.time(), u['id']))
+                alert(lead_ids(('admin',)), '👋 ' + u['name'] + ' logged in', u['name'] + ' opened the team site.', 'admin', ['wave'])
             secure = '; Secure' if self.headers.get('X-Forwarded-Proto') == 'https' else ''
             return self.send(200, {'ok': True, 'user': user_public(u)},
                              headers={'Set-Cookie': 'ftb=%s; Path=/; HttpOnly; SameSite=Lax; Max-Age=2592000%s' % (tok, secure)})
@@ -472,6 +512,22 @@ class H(BaseHTTPRequestHandler):
             log(iu['id'], 'set own password from invite')
             return self.send(200, {'ok': True, 'username': iu['username']})
 
+        # ---- my phone alerts
+        if p == '/api/me/alerts':
+            u = self.need()
+            if not u:
+                return
+            if method == 'POST':
+                if b.get('test'):
+                    threading.Thread(target=_ntfy, args=(user_topic(u['id']), '🔔 Test alert', 'Alerts from the Fla w Tbatik team site work!', (public_url() or ''), ['bell']), daemon=True).start()
+                    return self.send(200, {'ok': True})
+                with db() as c:
+                    c.execute('UPDATE users SET alerts=? WHERE id=?', (1 if b.get('on') else 0, u['id']))
+                return self.send(200, {'ok': True})
+            with db() as c:
+                on = c.execute('SELECT alerts FROM users WHERE id=?', (u['id'],)).fetchone()['alerts']
+            return self.send(200, {'topic': user_topic(u['id']), 'on': on != 0})
+
         # ---- ideas box (everyone on the team)
         if p == '/api/ideas' or p.startswith('/api/ideas/'):
             u = self.need()
@@ -498,6 +554,7 @@ class H(BaseHTTPRequestHandler):
                 with db() as c:
                     c.execute('INSERT INTO ideas(at,user_id,kind,text,link) VALUES(?,?,?,?,?)', (now_iso(), u['id'], kind, text, link))
                 log(u['id'], 'added an idea')
+                alert(lead_ids(), '💡 New idea from ' + u['name'], text[:200], 'ideas', ['bulb'], skip=u['id'])
                 return self.send(200, {'ok': True})
             m = re.match(r'^/api/ideas/(\d+)/(vote|status|delete)$', p)
             if not m or method != 'POST':
@@ -520,6 +577,8 @@ class H(BaseHTTPRequestHandler):
                     c.execute('UPDATE ideas SET status=?, reply=? WHERE id=?', (st, (b.get('reply') or '').strip()[:1000], iid))
             if act == 'status':
                 log(u['id'], 'marked an idea: ' + (st or 'open'))
+                if st == 'Chosen':
+                    alert([idea['user_id']], '⭐ Your idea was chosen!', (b.get('reply') or idea['text'])[:200], 'ideas', ['star'], skip=u['id'])
                 return self.send(200, {'ok': True})
                 if act == 'delete':
                     if not (lead or idea['user_id'] == u['id']):
@@ -608,6 +667,18 @@ class H(BaseHTTPRequestHandler):
                 c.execute('UPDATE tasks SET status=?, progress=? WHERE key=?', (new_status, PROGRESS[new_status], key))
             log(u['id'], '%s → %s: %s' % (t['task'], new_status, act))
             ok = push_status(t, new_status)
+            if act == 'submit':
+                alert(lead_ids(), '📤 ' + u['name'] + ' submitted', t['task'] + ' (Week %s). Open Review.' % t['week'], 'review', ['inbox_tray'], skip=u['id'])
+            elif act == 'status' and new_status == 'In Progress':
+                alert(lead_ids(), '▶️ ' + u['name'] + ' started a task', t['task'], 'team', ['arrow_forward'], skip=u['id'])
+            elif act == 'review':
+                with db() as c:
+                    who = c.execute('SELECT user_id FROM subs WHERE task_key=? ORDER BY id DESC LIMIT 1', (key,)).fetchone()
+                if who:
+                    if verdict == 'approve':
+                        alert([who['user_id']], '✅ Approved: ' + t['task'], 'Great work! It is done.', 'tasks', ['white_check_mark'], skip=u['id'])
+                    else:
+                        alert([who['user_id']], '✏️ Changes requested: ' + t['task'], (b.get('note') or 'Open the site to see what to change.')[:300], 'tasks', ['pencil2'], skip=u['id'])
             return self.send(200, {'ok': True, 'status': new_status, 'sheet': ok})
 
         # ---- admin
@@ -659,6 +730,14 @@ class H(BaseHTTPRequestHandler):
                     c.execute('INSERT INTO weeks(n,published) VALUES(?,?) ON CONFLICT(n) DO UPDATE SET published=excluded.published',
                               (int(b['n']), 1 if b.get('published') else 0))
                 log(u['id'], 'week %s %s' % (b['n'], 'published' if b.get('published') else 'hidden'))
+                if b.get('published'):
+                    with db() as c:
+                        wt = [dict(r) for r in c.execute('SELECT * FROM tasks WHERE week=?', (int(b['n']),))]
+                        people = [dict(r) for r in c.execute("SELECT * FROM users WHERE active=1 AND role!='admin'")]
+                    for pu in people:
+                        mine = [x for x in wt if is_mine(x, pu)]
+                        if mine:
+                            alert([pu['id']], '📋 New tasks: Week %s' % b['n'], ' · '.join(x['task'] for x in mine)[:300], 'tasks', ['clipboard'])
                 return self.send(200, {'ok': True})
             if p == '/api/admin/settings':
                 keys = ('bridge_url', 'bridge_token', 'maintenance', 'ntfy', 'board_url')
