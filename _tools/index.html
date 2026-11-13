@@ -554,7 +554,7 @@ async function drawStory(){
   x.fillStyle = B.t; x.font = '700 46px "IBM Plex Sans Arabic", sans-serif';
   x.fillText(cdLang === 'en' ? E.shortEn : E.shortAr, 540, 1610);
   x.font = '500 40px "IBM Plex Sans Arabic", sans-serif';
-  x.fillText(cdLang === 'en' ? E.placeEn : E.placeAr, 540, 1670);
+  x.fillText(E.venuePublic ? (cdLang === 'en' ? E.placeEn : E.placeAr) : (cdLang === 'en' ? E.publicPlaceEn : E.publicPlaceAr), 540, 1670);
 }
 $('cdDl').onclick = () => $('cdCanvas').toBlob(b => download(b, 'countdown-' + ($('cdDays').value || 0) + '-days.png'), 'image/png');
 
@@ -577,7 +577,8 @@ $('safeFile').onchange = e => readImage(e.target.files[0], (i, url) => { $('safe
 $('sizes').innerHTML = D.sizes.map(s => '<tr><td><b>' + esc(s.name) + '</b></td><td>' + esc(s.px) + '</td><td class="muted">' + esc(s.note) + '</td></tr>').join('');
 
 /* ---------- captions ---------- */
-const fill = s => s.replace(/\{(\w+)\}/g, (m, k) => k === 'days' ? DAYS : (E[k] !== undefined ? E[k] : m));
+// Until the venue can be announced, {placeEn}/{placeAr} in captions become "Jeddah · location announced soon".
+const fill = s => s.replace(/\{(\w+)\}/g, (m, k) => k === 'days' ? DAYS : (!E.venuePublic && (k === 'placeEn' || k === 'placeAr')) ? (k === 'placeEn' ? E.publicPlaceEn : E.publicPlaceAr) : (E[k] !== undefined ? E[k] : m));
 $('capTpl').innerHTML = D.captionTemplates.map((t, i) => '<option value="' + i + '">' + esc(t.name) + '</option>').join('');
 let tagsOn = new Set(D.hashtags.slice(0, 3));
 function capBody(){ return $('capText').value.replace(/\n*(#[^\s#]+\s*)+$/u, '').trimEnd(); }
@@ -623,7 +624,7 @@ drawShots();
 
 /* ---------- brand ---------- */
 $('bDates').textContent = E.datesEn; $('bDatesAr').textContent = E.datesAr;
-$('bPlace').textContent = E.placeEn; $('bPlaceAr').textContent = E.placeAr;
+$('bPlace').textContent = E.placeEn + (E.venuePublic ? '' : '  (not public yet: in posts write "' + E.publicPlaceEn + '")'); $('bPlaceAr').textContent = E.venuePublic ? E.placeAr : E.publicPlaceAr;
 $('wrong').innerHTML = D.wrongDates.map(x => '<s>' + esc(x) + '</s>').join('');
 if (D.colorPairs) $('colorPairs').innerHTML = D.colorPairs.map(c => '<div style="background:' + c.bg + ';color:' + c.fg + ';border:2px solid var(--ink);border-radius:14px;padding:16px 18px;font-family:Impact,Lalezar,sans-serif;font-size:20px;min-width:200px">JOIN THE FUN<div style="font-family:inherit;font-size:13px;font-family:system-ui">' + esc(c.text) + '</div></div>').join('');
 if (D.designRules) $('designRules').innerHTML = D.designRules.map(x => '<li>' + esc(x) + '</li>').join('');

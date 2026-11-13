@@ -14,7 +14,11 @@ window.FTB = {
     shortEn: "24–25 Dec 2026",
     shortAr: "24–25 ديسمبر 2026",
     placeEn: "Al-Mohammadiya District Center, Jeddah",
-    placeAr: "مركز حي المحمدية، جدة"
+    placeAr: "مركز حي المحمدية، جدة",
+    // The venue name is NOT public yet. Posts, captions and stories use this until Rashad says it can be announced.
+    venuePublic: false,
+    publicPlaceEn: "Jeddah · location announced soon",
+    publicPlaceAr: "جدة · المكان نعلنه قريب"
   },
 
   // Team names and links are private: the team site adds them from local.js.
@@ -42,7 +46,7 @@ window.FTB = {
   ],
   checklist: [
     "Date is 24–25 Dec 2026 (no old dates)",
-    "Place is Al-Mohammadiya District Center",
+    "Do NOT write the venue name yet (only \"Jeddah\") until Rashad says it can be announced",
     "The official logo is used as it is: not redrawn, recolored, stretched or cut",
     "Empty space around the logo (at least 10% of its width)",
     "The logo is not on a busy background (or there is a blur / color layer behind it)",
@@ -57,7 +61,7 @@ window.FTB = {
     "After every post or reel: an Instagram story saying “New Post”"
   ],
   dmReplies: [
-    { q: "Where is it? / وين المكان؟", a: "📍 مركز حي المحمدية، جدة\nAl-Mohammadiya District Center, Jeddah" },
+    { q: "Where is it? / وين المكان؟", a: "📍 في جدة، والمكان بالتحديد نعلنه قريب، تابعونا 👀\nIn Jeddah. We will announce the exact place soon, stay tuned 👀" },
     { q: "When is it? / متى؟", a: "📅 الخميس 24 والجمعة 25 ديسمبر 2026\nThursday 24 – Friday 25 December 2026" },
     { q: "Tickets? / التذاكر؟", a: "التذاكر قريب، تابعونا عشان تعرفون أول ما تنزل 🎟️\nTickets are coming soon. Follow us to know first 🎟️" },
     { q: "Booths? / أبي بوث", a: "تسجيل البوثات قريب، تابعونا وبنعلن الرابط 🛍️\nBooth registration opens soon. Follow us for the link 🛍️" }
