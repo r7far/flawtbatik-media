@@ -53,7 +53,8 @@ window.FTB = {
     "Spelling checked (Arabic and English)",
     "No prices unless Rashad confirmed them",
     "Suhad or Rashad approved it on the team site (✅ Approve)",
-    "Grid order is right (post 1 first)"
+    "Grid order is right (post 1 first)",
+    "After every post or reel: an Instagram story saying “New Post”"
   ],
   dmReplies: [
     { q: "Where is it? / وين المكان؟", a: "📍 مركز حي المحمدية، جدة\nAl-Mohammadiya District Center, Jeddah" },
