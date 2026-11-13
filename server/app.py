@@ -54,7 +54,8 @@ def init_db():
         cols = [r['name'] for r in c.execute('PRAGMA table_info(users)')]
         if 'invite' not in cols:
             c.execute('ALTER TABLE users ADD COLUMN invite TEXT')
-        for col in ('last_seen REAL', 'last_login TEXT', 'last_tasks REAL', 'ntfy TEXT', 'alerts INTEGER DEFAULT 1', 'last_alert_login REAL'):
+        for col in ('last_seen REAL', 'last_login TEXT', 'last_tasks REAL', 'ntfy TEXT', 'alerts INTEGER DEFAULT 1', 'last_alert_login REAL',
+                    'used_invite TEXT'):
             if col.split()[0] not in cols:
                 c.execute('ALTER TABLE users ADD COLUMN ' + col)
 
@@ -472,9 +473,16 @@ class H(BaseHTTPRequestHandler):
             return
         if p == '/api/me':
             u = self.user()
+            hdr = None
+            if u:
+                # Keep people logged in: every visit renews the 30-day login on this phone.
+                ck = http.cookies.SimpleCookie(self.headers.get('Cookie') or '')
+                if ck.get('ftb'):
+                    secure = '; Secure' if self.headers.get('X-Forwarded-Proto') == 'https' else ''
+                    hdr = {'Set-Cookie': 'ftb=%s; Path=/; HttpOnly; SameSite=Lax; Max-Age=2592000%s' % (ck['ftb'].value, secure)}
             return self.send(200, {'user': user_public(u) if u else None, 'preview_by': getattr(self, 'preview_by', None),
                                    'maintenance': setting('maintenance') == '1',
-                                   'setup': no_users() and self.local()})
+                                   'setup': no_users() and self.local()}, headers=hdr)
         if p == '/api/setup' and method == 'POST':
             # First admin can only be created from the home network, before any user exists.
             if not (no_users() and self.local()):
@@ -499,16 +507,22 @@ class H(BaseHTTPRequestHandler):
 
         m = R(r'/api/invite/([\w-]{10,40})')
         if m:
+            tok = m.group(1)
             with db() as c:
-                iu = c.execute('SELECT * FROM users WHERE invite=? AND active=1', (m.group(1),)).fetchone()
+                iu = c.execute('SELECT * FROM users WHERE invite=? AND active=1', (tok,)).fetchone()
+                old = None if iu else c.execute('SELECT * FROM users WHERE used_invite=? AND active=1', (tok,)).fetchone()
             if not iu:
-                return self.err(404, 'This invite link is not valid any more. Ask Rashad for a new one.')
+                if old and method == 'GET':
+                    # An invite that was already used. The page sends them to log in (or straight in), never a dead end.
+                    return self.send(200, {'used': True, 'name': old['name'], 'username': old['username'],
+                                           'new_invite': bool(old['invite'])})
+                return self.err(404, 'This invite link was already used.')
             if method == 'GET':
                 return self.send(200, {'name': iu['name'], 'username': iu['username']})
             if len(b.get('password') or '') < 6:
                 return self.err(400, 'Password must be at least 6 characters')
             with db() as c:
-                c.execute('UPDATE users SET pw=?, invite=NULL WHERE id=?', (hash_pw(b['password']), iu['id']))
+                c.execute('UPDATE users SET pw=?, invite=NULL, used_invite=? WHERE id=?', (hash_pw(b['password']), tok, iu['id']))
             log(iu['id'], 'set own password from invite')
             return self.send(200, {'ok': True, 'username': iu['username']})
 
@@ -838,6 +852,34 @@ def periodic_sync():
             pass
 
 
+def check_link_once():
+    """The quick-tunnel link changes when the Pi or the tunnel restarts. When it does, send everyone the new link on their phone."""
+    url = public_url()
+    if not url:
+        return False
+    last = setting('last_public_url')
+    if url == last:
+        return False
+    set_setting('last_public_url', url)
+    if not last:
+        return False  # first run: just remember the link
+    with db() as c:
+        ids = [r['id'] for r in c.execute('SELECT id FROM users WHERE active=1')]
+    alert(ids, '🔗 New team site link', 'The team site has a new link. Tap to open it and log in. '
+          'رابط موقع الفريق تغيّر، اضغط هنا وادخل.', 'tasks', ['link'])
+    log(None, 'outside link changed, phone alert sent to everyone')
+    return True
+
+
+def watch_link():
+    while True:
+        time.sleep(120)
+        try:
+            check_link_once()
+        except Exception as e:
+            print('watch_link:', e, flush=True)
+
+
 def no_users():
     """True while there is no admin who has set a password (first setup still open)."""
     with db() as c:
@@ -857,5 +899,6 @@ if __name__ == '__main__':
             print('exists', a[0])
         sys.exit(0)
     threading.Thread(target=periodic_sync, daemon=True).start()
+    threading.Thread(target=watch_link, daemon=True).start()
     print('FTB media on :%d' % PORT, flush=True)
     ThreadingHTTPServer(('0.0.0.0', PORT), H).serve_forever()

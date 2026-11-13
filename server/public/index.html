@@ -158,10 +158,20 @@ function viewFile(name){
   document.getElementById('fileclose').onclick = close; document.addEventListener('keydown', esc1);
 }
 document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('a[data-view]'); if (!a) return; e.preventDefault(); viewFile(a.dataset.view); });
+const NOTE_USED = 'This invite link works once, to choose your password the first time. You already did that, so log in with your username and password.<div class="ar" style="margin-top:6px">رابط الدعوة يشتغل مرة وحدة بس، عشان تختار كلمة السر أول مرة. أنت اخترتها قبل، فادخل باسم المستخدم وكلمة السر.</div>';
+const NOTE_NEW = 'Rashad made you a new invite link. Open the newest link he sent you.<div class="ar" style="margin-top:6px">رشاد سوّى لك رابط دعوة جديد. افتح آخر رابط أرسله لك.</div>';
+const rememberUser = un => { try { localStorage.setItem('ftb_user', String(un || '').trim().toLowerCase()); } catch(e){} };
+const lastUser = () => { try { return localStorage.getItem('ftb_user') || ''; } catch(e){ return ''; } };
 async function boot(){
   const inv = location.pathname.match(/^\/invite\/([\w-]+)/);
-  if (inv) return inviteView(inv[1]);
   const me = await api('/api/me');
+  if (inv) {
+    // Old invite links stay useful: logged in → straight into the site; already used → the login page. Never a dead end.
+    let iv = null; try { iv = await api('/api/invite/' + inv[1]); } catch(e){}
+    if (iv && !iv.used) return inviteView(inv[1], iv);
+    history.replaceState(null, '', '/');
+    if (!me.user) return loginView(iv && iv.new_invite ? NOTE_NEW : NOTE_USED, iv ? iv.username : '');
+  }
   ME = me.user;
   let pv = $('#pv'); if (!pv) { pv = document.createElement('div'); pv.id = 'pv'; document.body.prepend(pv); }
   pv.innerHTML = me.preview_by && ME ? '<div style="background:#FFF1CF;border-bottom:2px solid var(--ink);padding:8px 12px;text-align:center;font-weight:600;font-size:14px">👁 You are seeing the site as <b>' + esc(ME.name) + '</b> (' + esc(ME.role) + '). View only, nothing changes. <button class="btn" id="pvx" style="margin-left:8px;padding:4px 10px">Back to my account</button></div>' : '';
@@ -190,20 +200,22 @@ function setupView(){
     '<label>Password (8+ characters)</label><input id="p" type="password" autocomplete="new-password"><div class="row"><button class="btn" id="go">Create admin</button></div></div>';
   $('#go').onclick = async () => { try { await api('/api/setup', {name:$('#n').value, username:$('#u').value, password:$('#p').value}); toast('Admin created. Log in now.'); boot(); } catch(e){ toast(e.message); } };
 }
-async function inviteView(tok){
+function inviteView(tok, u){
   $('#nav').innerHTML = ''; $('#adm').hidden = true;
-  let u; try { u = await api('/api/invite/' + tok); } catch(e){ app.innerHTML = '<div class="card center"><h3>Link not valid</h3><p>' + esc(e.message) + '</p></div>'; return; }
   app.innerHTML = '<div class="card center"><h2>Welcome ' + esc(u.name.split(' ')[0]) + ' 👋</h2><p class="ar" style="margin:0 0 6px">أهلًا فيك في فريق الميديا</p><p class="muted">Your username is <b>' + esc(u.username) + '</b>. Choose your password.</p>' +
-    '<label>Password (6+ characters)</label><input id="p1" type="password" autocomplete="new-password"><label>Again</label><input id="p2" type="password" autocomplete="new-password"><div class="row"><button class="btn" id="go">Save and log in</button></div></div>';
+    '<label>Password (6+ characters)</label><input id="p1" type="password" autocomplete="new-password"><label>Again</label><input id="p2" type="password" autocomplete="new-password"><div class="row"><button class="btn" id="go">Save and log in</button></div>' +
+    '<p class="small muted">This link works once. Next time, open the site and log in with your username and password.</p><div class="ar small">هذا الرابط يشتغل مرة وحدة. المرة الجاية افتح الموقع وادخل باسم المستخدم وكلمة السر.</div></div>';
   $('#go').onclick = async () => { if ($('#p1').value !== $('#p2').value) return toast('Passwords are not the same');
-    try { const r = await api('/api/invite/' + tok, {password:$('#p1').value}); await api('/api/login', {username:r.username, password:$('#p1').value}); history.replaceState(null, '', '/'); boot(); } catch(e){ toast(e.message); } };
+    try { const r = await api('/api/invite/' + tok, {password:$('#p1').value}); await api('/api/login', {username:r.username, password:$('#p1').value}); rememberUser(r.username); history.replaceState(null, '', '/'); boot(); } catch(e){ toast(e.message); } };
 }
-function loginView(){
+function loginView(note, uname){
   $('#nav').innerHTML = ''; $('#adm').hidden = true;
+  const un = uname || lastUser();
   app.innerHTML = '<div class="card center"><h2>Media Team</h2><p class="ar" style="margin:0 0 6px">فريق الميديا – فله وتباتيك</p>' +
-    '<label>Username</label><input id="u" autocapitalize="off" autocomplete="username"><label>Password</label><input id="p" type="password" autocomplete="current-password">' +
-    '<div class="row"><button class="btn" id="go">Log in</button></div><p class="muted small">No account? Ask Rashad.</p></div>';
-  const go = async () => { try { await api('/api/login', {username:$('#u').value, password:$('#p').value}); boot(); } catch(e){ toast(e.message); } };
+    (note ? '<div class="small" id="lnote" style="background:#FFF1CF;border-radius:10px;padding:10px 12px;margin:8px 0">' + note + '</div>' : '') +
+    '<label>Username</label><input id="u" autocapitalize="off" autocomplete="username" value="' + esc(un) + '"><label>Password</label><input id="p" type="password" autocomplete="current-password">' +
+    '<div class="row"><button class="btn" id="go">Log in</button></div><p class="muted small">No account, or forgot your password? Ask Rashad.</p><div class="ar small">ما عندك حساب، أو نسيت كلمة السر؟ كلّم رشاد.</div></div>';
+  const go = async () => { try { await api('/api/login', {username:$('#u').value, password:$('#p').value}); rememberUser($('#u').value); boot(); } catch(e){ toast(e.message); } };
   $('#go').onclick = go; $('#p').onkeydown = e => { if (e.key === 'Enter') go(); };
 }
 
@@ -325,13 +337,15 @@ async function aTeam(){
 }
 async function aUsers(){
   const {users, public: pub} = await api('/api/admin/users');
-  $('#ab').innerHTML = '<div class="card"><div class="row" style="margin:0 0 10px;justify-content:space-between"><h3>Users</h3><button class="btn" id="add">＋ Add user</button></div><table><tr><th>Name</th><th>Username</th><th>Name in sheet</th><th>Role</th><th></th></tr>' +
+  $('#ab').innerHTML = '<div class="card"><div class="row" style="margin:0 0 10px;justify-content:space-between"><h3>Users</h3><div class="row" style="margin:0"><button class="btn ghost" id="cpsite">🔗 Copy site link</button><button class="btn" id="add">＋ Add user</button></div></div>' +
+    '<p class="small muted" style="margin:0 0 8px">An invite link works once, to choose a password. People who already joined use the site link.</p><table><tr><th>Name</th><th>Username</th><th>Name in sheet</th><th>Role</th><th></th></tr>' +
     users.map(u => '<tr><td><b>' + esc(u.name) + '</b>' + (u.active ? '' : ' <span class="pill late">off</span>') + '<div class="small muted">' + esc(u.job) + '</div>' + (u.invite ? '<div class="row" style="margin-top:6px"><span class="pill soon">Waiting to set password</span><button class="btn ghost" data-copy="' + esc(u.invite) + '">📋 Copy invite link</button></div>' : '') + '</td><td>' + esc(u.username) + '</td><td>' + esc(u.sheet_name) + '</td><td>' + esc(u.role) + '</td><td><button class="btn ghost" data-id="' + u.id + '">Edit</button>' + (u.role !== 'admin' && u.active ? ' <button class="btn ghost" data-as="' + u.id + '">👁 View as</button>' : '') + '</td></tr>').join('') +
     '</table><p class="small muted">"Name in sheet" must match how the name is written in the Owner column (e.g. Suhad Shami).</p></div>';
   $('#add').onclick = () => userDialog({role:'member', active:1});
   $('#ab').querySelectorAll('[data-as]').forEach(b => b.onclick = async () => { await api('/api/viewas', {id:+b.dataset.as}); VIEW = 'tasks'; boot(); });
   $('#ab').querySelectorAll('[data-id]').forEach(b => b.onclick = () => userDialog(users.find(u => u.id == b.dataset.id)));
-  $('#ab').querySelectorAll('[data-copy]').forEach(b => b.onclick = () => copyText((pub || location.origin) + b.dataset.copy).then(() => toast('Invite link copied. Send it to them on WhatsApp.')));
+  $('#ab').querySelectorAll('[data-copy]').forEach(b => b.onclick = () => copyText((pub || location.origin) + b.dataset.copy).then(() => toast('Invite link copied. It works once. Send it to them on WhatsApp.')));
+  $('#cpsite').onclick = () => copyText((pub || location.origin) + '/').then(() => toast('Site link copied. Send this one to people who already joined.'));
 }
 function userDialog(u){
   const d = $('#dlg');
