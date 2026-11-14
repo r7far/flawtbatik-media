@@ -186,11 +186,11 @@ async function boot(){
 function drawNav(){
   const items = [['tasks', ME.role === 'member' ? 'My tasks' : 'Tasks']];
   if (['admin','head'].includes(ME.role)) items.push(['review','Review'], ['team','Team']);
-  items.push(['ideas','💡 Ideas'], ['tools','Tools'], ['me', '👤 ' + ME.name.split(' ')[0]]);
+  items.push(['ideas','💡 Ideas'], ['plan','📅 Plan'], ['tools','Tools'], ['me', '👤 ' + ME.name.split(' ')[0]]);
   $('#nav').innerHTML = items.map(([k, l]) => '<a data-v="' + k + '" class="' + (k === VIEW ? 'on' : '') + '">' + esc(l) + '</a>').join('');
   const adm = $('#adm'); adm.hidden = ME.role !== 'admin'; adm.classList.toggle('on', VIEW === 'admin');
   adm.onclick = () => { VIEW = 'admin'; drawNav(); show(VIEW); };
-  $('#nav').onclick = e => { const a = e.target.closest('a'); if (!a) return; if (a.dataset.v === 'tools') { location.href = TOOLS + '#home'; return; } VIEW = a.dataset.v; drawNav(); show(VIEW); };
+  $('#nav').onclick = e => { const a = e.target.closest('a'); if (!a) return; if (a.dataset.v === 'tools') { location.href = TOOLS + '#home'; return; } if (a.dataset.v === 'plan') { window.open(TOOLS + 'assets/media-plan.pdf', '_blank'); return; } VIEW = a.dataset.v; drawNav(); show(VIEW); };
 }
 function show(v){ ({tasks:tasksView, review:reviewView, team:teamView, ideas:ideasView, admin:adminView, me:meView})[v](); window.scrollTo(0,0); }
 
