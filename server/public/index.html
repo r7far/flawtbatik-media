@@ -238,7 +238,7 @@ function taskCard(t, opts = {}){
     actions.push('<button class="btn" data-a="submit" data-k="' + t.key + '">📤 Submit</button>');
   }
   if (opts.review && t.status === 'Submitted') actions.push('<button class="btn ok" data-a="approve" data-k="' + t.key + '">✅ Approve</button><button class="btn no" data-a="changes" data-k="' + t.key + '">✏️ Changes</button>');
-  return '<div class="task"><div class="top"><div><b class="t">' + esc(t.task) + '</b>' + (t.detail ? '<div class="small">' + esc(t.detail) + '</div>' : '') + '</div>' + statusPill(t) + '</div>' +
+  return '<div class="task"><div class="top"><div><b class="t">' + esc(t.task) + '</b>' + (t.detail ? (String(t.key).startsWith('p-') ? '<details class="small" style="margin-top:4px"><summary style="cursor:pointer;font-weight:600">📖 Details</summary><div style="white-space:pre-line;margin-top:6px">' + esc(t.detail) + '</div></details>' : '<div class="small">' + esc(t.detail) + '</div>') : '') + '</div>' + statusPill(t) + '</div>' +
     '<div class="meta"><span>📅 ' + esc(fmt(t.due) || t.timing) + '</span>' + (opts.showOwner ? '<span>👤 ' + esc(t.owner) + '</span>' : '') +
     (t.priority ? '<span>⚑ ' + esc(t.priority) + '</span>' : '') + (t.deliverable ? '<span>🎯 ' + esc(t.deliverable) + '</span>' : '') + (t.support ? '<span>🤝 ' + esc(t.support) + '</span>' : '') + '</div>' +
     subsHtml(t) + (actions.length ? '<div class="row">' + actions.join('') + '</div>' : '') + '</div>';
@@ -253,7 +253,7 @@ async function tasksView(){
   if (!list.length) h += '<div class="card">No tasks yet for you this week. 🎉</div>';
   byWeek(list).forEach(([w, ts]) => {
     const pubNote = ME.role === 'admin' && !ts[0].published ? ' <span class="pill soon">Hidden from the team</span>' : '';
-    h += '<div class="week">Week ' + w + ' –' + pubNote + '</div>' + ts.map(t => taskCard(t, {mine: mine || ownsTask(t), showOwner: !mine, review: !mine && ME.role !== 'viewer'})).join('');
+    h += '<div class="week">Week ' + w + ' –' + (((ts[0].week_label || '').match(/\(([^)]+)\)/) || [])[1] ? ' <span style="font-size:.7em;opacity:.7">' + esc(ts[0].week_label.match(/\(([^)]+)\)/)[1]) + '</span>' : '') + pubNote + '</div>' + ts.map(t => taskCard(t, {mine: mine || ownsTask(t), showOwner: !mine, review: !mine && ME.role !== 'viewer'})).join('');
   });
   app.innerHTML = h; bindTaskActions();
 }

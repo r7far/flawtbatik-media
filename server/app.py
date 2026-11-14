@@ -177,7 +177,7 @@ def sync_from_sheet():
     out = bridge('read')
     tasks = rows_to_tasks(out['rows'])
     with _lock, db() as c:
-        c.execute('DELETE FROM tasks')
+        c.execute("DELETE FROM tasks WHERE key NOT LIKE 'p-%'")  # planned tasks (p-…) live only on the site
         for t in tasks:
             t['synced'] = time.time()
             c.execute('INSERT INTO tasks(%s) VALUES(%s)' % (','.join(t), ','.join('?' * len(t))), tuple(t.values()))
@@ -187,6 +187,8 @@ def sync_from_sheet():
 
 
 def push_status(task, status, note=None):
+    if str(task['key']).startswith('p-'):
+        return True  # planned task: not in the sheet
     payload = {'row': task['row'], 'task': task['task'], 'status': status, 'progress': PROGRESS.get(status, 0)}
     if note is not None:
         payload['notes'] = note
