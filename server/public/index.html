@@ -22,6 +22,7 @@ nav a{text-decoration:none;color:var(--ink);font-weight:600;font-size:14px;paddi
 .guide summary{cursor:pointer;font-weight:700;list-style:none}.guide summary::-webkit-details-marker{display:none}
 .guide summary .ar{font-weight:400;opacity:.7;margin-left:6px}.guide ol{margin:8px 0;padding-left:20px}.guide p{margin:6px 0}.guide p.ar{opacity:.8}
 nav a.on{background:var(--ink);color:var(--bg)}
+.golink{color:#1a6fd1;font-weight:700;text-decoration:underline;cursor:pointer}
 .admbtn{margin-left:4px;flex:none;font-size:11px;font-weight:700;text-decoration:none;color:var(--ink);border:1.5px solid var(--ink);border-radius:999px;padding:4px 9px;cursor:pointer;white-space:nowrap;background:#fff}
 .admbtn.on{background:var(--ink);color:var(--bg)}
 main{padding:22px 16px 60px}
@@ -88,6 +89,12 @@ async function api(path, body){
   return j;
 }
 const TOOLS = '/tools/';
+const TOOLPAGES = ['brand','board','grid','studio','captions','event','home'];
+function linkify(h){ return h.replace(/\[\[(\w+)\|([^\]]+)\]\]/g, (m, k, l) => '<a class="golink" data-go="' + k + '">' + l + '</a>'); }
+document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('a[data-go]'); if (!a) return; e.preventDefault(); const k = a.dataset.go;
+  if (k === 'plan') return window.open(TOOLS + 'assets/media-plan.pdf', '_blank');
+  if (TOOLPAGES.includes(k)) { location.href = TOOLS + '#' + k; return; }
+  if (['review','team','ideas','tasks','me'].includes(k)) { VIEW = (['review','team'].includes(k) && !['admin','head'].includes(ME.role)) ? 'tasks' : k; drawNav(); show(VIEW); } });
 const _q = new URLSearchParams(location.search);
 let ME = null, VIEW = _q.get('admin') ? 'admin' : (['ideas','tasks','review','team'].includes(_q.get('v')) ? _q.get('v') : 'tasks'), AT = 'team';
 if (location.search) history.replaceState(null, '', location.pathname);
@@ -237,8 +244,9 @@ function taskCard(t, opts = {}){
     if (t.status === 'Not Started') actions.push('<button class="btn ghost" data-a="start" data-k="' + t.key + '">▶️ Start</button>');
     actions.push('<button class="btn" data-a="submit" data-k="' + t.key + '">📤 Submit</button>');
   }
+  if (ME.role === 'admin') actions.push('<button class="btn ghost" data-a="edit" data-k="' + t.key + '">✏️ Edit</button>');
   if (opts.review && t.status === 'Submitted') actions.push('<button class="btn ok" data-a="approve" data-k="' + t.key + '">✅ Approve</button><button class="btn no" data-a="changes" data-k="' + t.key + '">✏️ Changes</button>');
-  return '<div class="task"><div class="top"><div><b class="t">' + esc(t.task) + '</b>' + (t.detail ? (String(t.key).startsWith('p-') ? '<details class="small" style="margin-top:4px"><summary style="cursor:pointer;font-weight:600">📖 Details</summary><div style="white-space:pre-line;margin-top:6px">' + esc(t.detail) + '</div></details>' : '<div class="small">' + esc(t.detail) + '</div>') : '') + '</div>' + statusPill(t) + '</div>' +
+  return '<div class="task"><div class="top"><div><b class="t">' + esc(t.task) + '</b>' + (t.detail ? (String(t.key).startsWith('p-') ? '<details class="small" style="margin-top:4px"><summary style="cursor:pointer;font-weight:600">📖 Details</summary><div style="white-space:pre-line;margin-top:6px">' + linkify(esc(t.detail)) + '</div></details>' : '<div class="small">' + linkify(esc(t.detail)) + '</div>') : '') + '</div>' + statusPill(t) + '</div>' +
     '<div class="meta"><span>📅 ' + esc(fmt(t.due) || t.timing) + '</span>' + (opts.showOwner ? '<span>👤 ' + esc(t.owner) + '</span>' : '') +
     (t.priority ? '<span>⚑ ' + esc(t.priority) + '</span>' : '') + (t.deliverable ? '<span>🎯 ' + esc(t.deliverable) + '</span>' : '') + (t.support ? '<span>🤝 ' + esc(t.support) + '</span>' : '') + '</div>' +
     subsHtml(t) + (actions.length ? '<div class="row">' + actions.join('') + '</div>' : '') + '</div>';
@@ -253,7 +261,7 @@ async function tasksView(){
   if (!list.length) h += '<div class="card">No tasks yet for you this week. 🎉</div>';
   byWeek(list).forEach(([w, ts]) => {
     const pubNote = ME.role === 'admin' && !ts[0].published ? ' <span class="pill soon">Hidden from the team</span>' : '';
-    h += '<div class="week">Week ' + w + ' –' + (((ts[0].week_label || '').match(/\(([^)]+)\)/) || [])[1] ? ' <span style="font-size:.7em;opacity:.7">' + esc(ts[0].week_label.match(/\(([^)]+)\)/)[1]) + '</span>' : '') + pubNote + '</div>' + ts.map(t => taskCard(t, {mine: mine || ownsTask(t), showOwner: !mine, review: !mine && ME.role !== 'viewer'})).join('');
+    h += '<div class="week">Week ' + w + ' –' + (((ts[0].week_label || '').match(/\(([^)]+)\)/) || [])[1] ? ' <span style="font-size:.7em;opacity:.7">' + esc(ts[0].week_label.match(/\(([^)]+)\)/)[1]) + '</span>' : '') + pubNote + (ME.role === 'admin' ? ' <button class="btn ghost" style="font-size:13px;padding:4px 10px" data-a="add" data-w="' + w + '">➕ Add task</button>' : '') + '</div>' + ts.map(t => taskCard(t, {mine: mine || ownsTask(t), showOwner: !mine, review: !mine && ME.role !== 'viewer'})).join('');
   });
   app.innerHTML = h; bindTaskActions();
 }
@@ -264,9 +272,30 @@ function bindTaskActions(){
     try {
       if (a === 'start') { await api('/api/tasks/' + k + '/status', {status:'In Progress'}); toast('Started'); }
       else if (a === 'submit') return submitDialog(k);
+      else if (a === 'edit') return editDialog(k);
+      else if (a === 'add') return editDialog(null, +b.dataset.w);
       else if (a === 'approve' || a === 'changes') return reviewDialog(k, a);
       show(VIEW);
     } catch(err){ toast(err.message); }
+  };
+}
+function editDialog(k, week){
+  const t = k ? TASKS.find(x => x.key === k) : {task:'', detail:'', owner:'', support:'', timing:'', priority:'', deliverable:'', status:'Not Started', week: week};
+  const d = $('#dlg'), sheet = k && !String(k).startsWith('p-');
+  const f = (id, lab, v) => '<label>' + lab + '</label><input id="' + id + '" value="' + esc(v || '') + '" dir="auto">';
+  d.innerHTML = '<h3>' + (k ? '✏️ Edit task' : '➕ New task · Week ' + t.week) + '</h3>' +
+    (sheet ? '<p class="small muted">This task comes from the unified sheet. Status changes go to the sheet. Text changes stay on the site until the next sheet sync replaces them, so change the text in the sheet too.</p>' : '') +
+    f('et', 'Task', t.task) + '<label>Details (shown under 📖 Details)</label><textarea id="ed" dir="auto" style="min-height:160px">' + esc(t.detail || '') + '</textarea>' +
+    '<p class="small muted" style="margin:2px 0 6px">Blue link: write [[brand|🎨 Brand]]. Pages: plan, review, brand, board, grid, studio, captions, event.</p>' +
+    f('eo', 'Owner (name as on the site)', t.owner) + f('es', 'Support', t.support) + f('ew', 'Due (e.g. Wed 18 Nov)', t.timing || t.due) + f('ep', 'Priority', t.priority) + f('ev', 'Deliverable', t.deliverable) +
+    (k ? '' : f('ek', 'Week number', t.week)) +
+    '<label>Status</label><select id="est">' + ['Not Started','In Progress','Submitted','Changes requested','Done'].map(x => '<option' + (x === (t.status || 'Not Started') ? ' selected' : '') + '>' + x + '</option>').join('') + '</select>' +
+    '<div class="row"><button class="btn" id="ok">Save</button><button class="btn ghost" id="cx">Cancel</button></div>';
+  d.showModal(); $('#cx').onclick = () => d.close();
+  $('#ok').onclick = async () => {
+    const body = {task:$('#et').value, detail:$('#ed').value, owner:$('#eo').value, support:$('#es').value, timing:$('#ew').value, priority:$('#ep').value, deliverable:$('#ev').value, status:$('#est').value};
+    if (k) body.key = k; else body.week = +$('#ek').value;
+    try { const r = await api('/api/admin/task', body); d.close(); toast(r.sheet === false ? 'Saved on the site (sheet write failed)' : 'Saved'); show(VIEW); } catch(e){ toast(e.message); }
   };
 }
 function submitDialog(k){
@@ -362,9 +391,10 @@ async function aWeeks(){
   const j = await loadTasks();
   const weeks = byWeek(TASKS);
   $('#ab').innerHTML = '<div class="card"><div class="row" style="margin:0;justify-content:space-between"><div><h3>Sheet sync</h3><div class="small muted">Last sync: ' + esc(j.last_sync || 'never') + ' · auto every 10 minutes</div></div><button class="btn" id="sync">🔄 Sync now</button></div></div>' +
-    '<div class="card"><h3>Weeks</h3><p class="small muted">The team only sees a week after you publish it (after the founders approve it).</p><table><tr><th>Week</th><th>Tasks</th><th>Shown to team</th></tr>' +
-    weeks.map(([w, ts]) => '<tr><td><b>Week ' + w + '</b></td><td>' + ts.length + '</td><td><label style="display:flex;gap:8px;align-items:center;margin:0"><input type="checkbox" style="width:auto" data-w="' + w + '"' + (ts[0].published ? ' checked' : '') + '> ' + (ts[0].published ? 'Published' : 'Hidden') + '</label></td></tr>').join('') + '</table></div>';
+    '<div class="card"><h3>Weeks</h3><p class="small muted">The team only sees a week after you publish it (after the founders approve it).</p><table><tr><th>Week</th><th>Tasks</th><th>Shown to team</th><th>Done</th></tr>' +
+    weeks.map(([w, ts]) => '<tr><td><b>Week ' + w + '</b></td><td>' + ts.length + '</td><td><label style="display:flex;gap:8px;align-items:center;margin:0"><input type="checkbox" style="width:auto" data-w="' + w + '"' + (ts[0].published ? ' checked' : '') + '> ' + (ts[0].published ? 'Published' : 'Hidden') + '</label></td><td>' + (ts.every(t => t.status === 'Done') ? '✅ All done' : '<button class="btn ghost" style="font-size:13px;padding:4px 10px" data-done="' + w + '">✅ Mark all done (' + ts.filter(t => t.status === 'Done').length + '/' + ts.length + ')</button>') + '</td></tr>').join('') + '</table></div>';
   $('#sync').onclick = async () => { $('#sync').disabled = true; try { const r = await api('/api/admin/sync', {}); toast('Synced ' + r.count + ' tasks'); aWeeks(); } catch(e){ toast(e.message); $('#sync').disabled = false; } };
+  $('#ab').querySelectorAll('[data-done]').forEach(c => c.onclick = async () => { if (!confirm('Mark every task in Week ' + c.dataset.done + ' as Done? Use this when they handed everything in on WhatsApp.')) return; try { const r = await api('/api/admin/weekdone', {n:+c.dataset.done}); toast(r.count + ' tasks marked Done' + (r.sheet_failed.length ? ' (sheet write failed for ' + r.sheet_failed.length + ')' : '')); aWeeks(); } catch(e){ toast(e.message); } });
   $('#ab').querySelectorAll('[data-w]').forEach(c => c.onchange = async () => { await api('/api/admin/weeks', {n:+c.dataset.w, published:c.checked}); toast(c.checked ? 'Week published' : 'Week hidden'); aWeeks(); });
 }
 async function aSettings(){

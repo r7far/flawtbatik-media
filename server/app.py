@@ -741,6 +741,49 @@ class H(BaseHTTPRequestHandler):
                     return self.err(502, str(e))
                 log(u['id'], 'synced %d tasks' % n)
                 return self.send(200, {'ok': True, 'count': n, 'last_sync': setting('last_sync')})
+            if p == '/api/admin/task' and method == 'POST':
+                fields = ('task', 'detail', 'owner', 'support', 'timing', 'priority', 'deliverable', 'status', 'week')
+                vals = {k: (str(b[k]).strip() if k != 'week' else int(b[k])) for k in fields if k in b}
+                if 'status' in vals and vals['status'] not in STATUSES:
+                    return self.err(400, 'Bad status')
+                if 'task' in vals and not vals['task']:
+                    return self.err(400, 'Task name is empty')
+                if 'timing' in vals:
+                    vals['due'] = parse_due(vals['timing'])
+                key = b.get('key')
+                with db() as c:
+                    old = c.execute('SELECT * FROM tasks WHERE key=?', (key,)).fetchone() if key else None
+                    if key and not old:
+                        return self.err(404, 'Task not found')
+                    if old:
+                        if 'status' in vals:
+                            vals['progress'] = PROGRESS.get(vals['status'], 0)
+                        if vals:
+                            c.execute('UPDATE tasks SET %s WHERE key=?' % ','.join('%s=?' % k for k in vals), tuple(vals.values()) + (key,))
+                    else:
+                        if 'week' not in vals or not vals.get('task'):
+                            return self.err(400, 'Week and task name are needed')
+                        key = 'p-' + secrets.token_hex(4)
+                        lab = c.execute('SELECT week_label FROM tasks WHERE week=? AND week_label!="" LIMIT 1', (vals['week'],)).fetchone()
+                        vals.setdefault('status', 'Not Started')
+                        row = dict(key=key, row=0, week_label=lab[0] if lab else 'Week %d –' % vals['week'], category='', progress=PROGRESS.get(vals['status'], 0), notes='', synced=0)
+                        row.update(vals)
+                        c.execute('INSERT INTO tasks(%s) VALUES(%s)' % (','.join(row), ','.join('?' * len(row))), tuple(row.values()))
+                        c.execute('INSERT OR IGNORE INTO weeks(n,published) VALUES(?,0)', (vals['week'],))
+                    t = c.execute('SELECT * FROM tasks WHERE key=?', (key,)).fetchone()
+                sheet = True
+                if old and 'status' in vals and vals['status'] != old['status']:
+                    sheet = push_status(t, vals['status'])
+                log(u['id'], ('edited task: ' if old else 'added task: ') + t['task'])
+                return self.send(200, {'ok': True, 'key': key, 'sheet': sheet, 'from_sheet': not str(key).startswith('p-')})
+            if p == '/api/admin/weekdone' and method == 'POST':
+                n = int(b['n'])
+                with db() as c:
+                    ts = [r for r in c.execute("SELECT * FROM tasks WHERE week=? AND status!='Done'", (n,))]
+                    c.execute("UPDATE tasks SET status='Done', progress=? WHERE week=?", (PROGRESS['Done'], n))
+                failed = [t['task'] for t in ts if not push_status(t, 'Done')]
+                log(u['id'], 'week %d: all done (%d tasks)' % (n, len(ts)))
+                return self.send(200, {'ok': True, 'count': len(ts), 'sheet_failed': failed})
             if p == '/api/admin/weeks' and method == 'POST':
                 with db() as c:
                     c.execute('INSERT INTO weeks(n,published) VALUES(?,?) ON CONFLICT(n) DO UPDATE SET published=excluded.published',
