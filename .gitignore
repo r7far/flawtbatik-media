@@ -1,0 +1,6 @@
+
+# Team data stays on the Pi, not in this public repo
+_tools/assets/schedule.json
+tools/*.json
+tools/schedule.py
+tools/tasks2.py
