@@ -93,6 +93,7 @@ const TOOLPAGES = ['brand','board','grid','studio','captions','event','home'];
 function linkify(h){ return h.replace(/\[\[(\w+)\|([^\]]+)\]\]/g, (m, k, l) => '<a class="golink" data-go="' + k + '">' + l + '</a>'); }
 document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('a[data-go]'); if (!a) return; e.preventDefault(); const k = a.dataset.go;
   if (k === 'plan') return window.open(TOOLS + 'assets/media-plan.pdf', '_blank');
+  if (k === 'sched') { VIEW = 'sched'; drawNav(); show(VIEW); return; }
   if (TOOLPAGES.includes(k)) { location.href = TOOLS + '#' + k; return; }
   if (['review','team','ideas','tasks','me'].includes(k)) { VIEW = (['review','team'].includes(k) && !['admin','head'].includes(ME.role)) ? 'tasks' : k; drawNav(); show(VIEW); } });
 const _q = new URLSearchParams(location.search);
@@ -193,13 +194,13 @@ async function boot(){
 function drawNav(){
   const items = [['tasks', ME.role === 'member' ? 'My tasks' : 'Tasks']];
   if (['admin','head'].includes(ME.role)) items.push(['review','Review'], ['team','Team']);
-  items.push(['ideas','💡 Ideas'], ['plan','📅 Plan'], ['tools','Tools'], ['me', '👤 ' + ME.name.split(' ')[0]]);
+  items.push(['sched','🗓️ Schedule'], ['ideas','💡 Ideas'], ['plan','📅 Plan'], ['tools','Tools'], ['me', '👤 ' + ME.name.split(' ')[0]]);
   $('#nav').innerHTML = items.map(([k, l]) => '<a data-v="' + k + '" class="' + (k === VIEW ? 'on' : '') + '">' + esc(l) + '</a>').join('');
   const adm = $('#adm'); adm.hidden = ME.role !== 'admin'; adm.classList.toggle('on', VIEW === 'admin');
   adm.onclick = () => { VIEW = 'admin'; drawNav(); show(VIEW); };
   $('#nav').onclick = e => { const a = e.target.closest('a'); if (!a) return; if (a.dataset.v === 'tools') { location.href = TOOLS + '#home'; return; } if (a.dataset.v === 'plan') { window.open(TOOLS + 'assets/media-plan.pdf', '_blank'); return; } VIEW = a.dataset.v; drawNav(); show(VIEW); };
 }
-function show(v){ ({tasks:tasksView, review:reviewView, team:teamView, ideas:ideasView, admin:adminView, me:meView})[v](); window.scrollTo(0,0); }
+function show(v){ ({sched:schedView, tasks:tasksView, review:reviewView, team:teamView, ideas:ideasView, admin:adminView, me:meView})[v](); window.scrollTo(0,0); }
 
 function setupView(){
   app.innerHTML = '<div class="card center"><h2>First setup</h2><p class="muted">Create the admin account (only works from the home network, once).</p>' +
@@ -264,6 +265,28 @@ async function tasksView(){
     h += '<div class="week">Week ' + w + ' –' + (((ts[0].week_label || '').match(/\(([^)]+)\)/) || [])[1] ? ' <span style="font-size:.7em;opacity:.7">' + esc(ts[0].week_label.match(/\(([^)]+)\)/)[1]) + '</span>' : '') + pubNote + (ME.role === 'admin' ? ' <button class="btn ghost" style="font-size:13px;padding:4px 10px" data-a="add" data-w="' + w + '">➕ Add task</button>' : '') + '</div>' + ts.map(t => taskCard(t, {mine: mine || ownsTask(t), showOwner: !mine, review: !mine && ME.role !== 'viewer'})).join('');
   });
   app.innerHTML = h; bindTaskActions();
+}
+async function schedView(){
+  app.innerHTML = '<p class="muted">Loading…</p>';
+  let d; try { const r = await fetch(TOOLS + 'assets/schedule.json?t=' + Date.now(), {credentials:'same-origin'}); d = await r.json(); } catch(e){ app.innerHTML = '<div class="card">Could not load the schedule.</div>'; return; }
+  const today = new Date(); today.setHours(0,0,0,0);
+  const ST = {done:['✅ Done','ok'], moved:['⏰ Moved','soon'], depends:['⚠️ Depends','soon'], tbd:['🗓️ Date TBD','soon'], planned:['Planned','']};
+  const card = x => { const dt = x.date === 'TBD' ? null : new Date(x.date + 'T00:00'); const isToday = dt && +dt === +today; const past = dt && dt < today;
+    const st = ST[x.status] || ST.planned; const mine = ME && (x.owner === ME.sheet_name || x.owner === ME.name || x.owner === 'All media team');
+    return '<div class="task" style="' + (isToday ? 'border:2px solid #1a6fd1;' : '') + (past && x.status === 'done' ? 'opacity:.65;' : '') + '" ' + (isToday ? 'id="today"' : '') + '>' +
+      '<div class="top"><div><div class="small muted"><b>' + (dt ? dt.toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short'}) : 'Date TBD') + '</b>' + (isToday ? ' · <b style="color:#1a6fd1">TODAY</b>' : '') + ' · ' + esc(x.kind) + '</div><b class="t">' + esc(x.title) + '</b></div>' +
+      (st[0] !== 'Planned' ? '<span class="pill ' + st[1] + '">' + st[0] + '</span>' : '') + '</div>' +
+      '<div class="meta"><span>👤 ' + esc(x.owner) + (mine ? ' (you)' : '') + '</span>' + (x.submit ? '<span>📤 Submit by ' + esc(x.submit) + '</span>' : '') + '</div>' +
+      (x.trend ? '<div class="small" style="margin-top:6px">🔥 <b>Trend: ' + esc(x.trend.name) + '</b>: ' + esc(x.trend.how) + ' ' + x.trend.links.map((u, i) => '<a class="golink" href="' + esc(u) + '" target="_blank" rel="noopener">example ' + (i + 1) + '</a>').join(' · ') + '</div>' : '') +
+      (x.needs ? '<div class="small" style="margin-top:4px">🔗 Needs: ' + esc(x.needs) + '</div>' : '') + (x.note ? '<div class="small muted">' + esc(x.note) + '</div>' : '') + '</div>'; };
+  const dated = d.items.filter(x => x.date !== 'TBD'), tbd = d.items.filter(x => x.date === 'TBD');
+  let h = '<h2>🗓️ Schedule</h2><div class="card small">What we post and when, day by day. ' + esc(d.time) + ' ' + esc(d.note) + '<div class="ar">جدول النشر يوم بيوم. الأيام الفاضية راحة.</div></div>';
+  const wk = x => { const t = new Date(x.date + 'T00:00'); const m = new Date(t); m.setDate(t.getDate() - ((t.getDay() + 6) % 7)); return m; };
+  let last = '';
+  dated.forEach(x => { const m = wk(x), k = m.toISOString().slice(0, 10); if (k !== last) { last = k; const e = new Date(m); e.setDate(m.getDate() + 6); h += '<div class="week">Week of ' + m.toLocaleDateString('en-GB', {day:'numeric', month:'short'}) + ' – ' + e.toLocaleDateString('en-GB', {day:'numeric', month:'short'}) + '</div>'; } h += card(x); });
+  if (tbd.length) h += '<div class="week">Date to be set</div>' + tbd.map(card).join('');
+  app.innerHTML = h;
+  const t = $('#today') || [...app.querySelectorAll('.task')].find(el => !el.style.opacity); if (t) t.scrollIntoView({block:'center'});
 }
 function bindTaskActions(){
   app.onclick = async e => {
