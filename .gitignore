@@ -6,3 +6,4 @@ tools/schedule.py
 tools/tasks2.py
 tools/cards/
 tools/enrich.py
+_tools/assets/refs.json

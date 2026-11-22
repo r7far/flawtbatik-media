@@ -93,7 +93,7 @@ const TOOLPAGES = ['brand','board','grid','studio','captions','event','home'];
 function linkify(h){ return h.replace(/\[\[(\w+)\|([^\]]+)\]\]/g, (m, k, l) => '<a class="golink" data-go="' + k + '">' + l + '</a>'); }
 document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('a[data-go]'); if (!a) return; e.preventDefault(); const k = a.dataset.go;
   if (k === 'plan') return window.open(TOOLS + 'assets/media-plan.pdf', '_blank');
-  if (k === 'sched') { VIEW = 'sched'; drawNav(); show(VIEW); return; }
+  if (k === 'sched' || k === 'refs') { VIEW = k; drawNav(); show(VIEW); return; }
   if (TOOLPAGES.includes(k)) { location.href = TOOLS + '#' + k; return; }
   if (['review','team','ideas','tasks','me'].includes(k)) { VIEW = (['review','team'].includes(k) && !['admin','head'].includes(ME.role)) ? 'tasks' : k; drawNav(); show(VIEW); } });
 const _q = new URLSearchParams(location.search);
@@ -194,13 +194,13 @@ async function boot(){
 function drawNav(){
   const items = [['tasks', ME.role === 'member' ? 'My tasks' : 'Tasks']];
   if (['admin','head'].includes(ME.role)) items.push(['review','Review'], ['team','Team']);
-  items.push(['sched','🗓️ Schedule'], ['ideas','💡 Ideas'], ['plan','📅 Plan'], ['tools','Tools'], ['me', '👤 ' + ME.name.split(' ')[0]]);
+  items.push(['sched','🗓️ Schedule'], ['refs','📎 References'], ['ideas','💡 Ideas'], ['plan','📅 Plan'], ['tools','Tools'], ['me', '👤 ' + ME.name.split(' ')[0]]);
   $('#nav').innerHTML = items.map(([k, l]) => '<a data-v="' + k + '" class="' + (k === VIEW ? 'on' : '') + '">' + esc(l) + '</a>').join('');
   const adm = $('#adm'); adm.hidden = ME.role !== 'admin'; adm.classList.toggle('on', VIEW === 'admin');
   adm.onclick = () => { VIEW = 'admin'; drawNav(); show(VIEW); };
   $('#nav').onclick = e => { const a = e.target.closest('a'); if (!a) return; if (a.dataset.v === 'tools') { location.href = TOOLS + '#home'; return; } if (a.dataset.v === 'plan') { window.open(TOOLS + 'assets/media-plan.pdf', '_blank'); return; } VIEW = a.dataset.v; drawNav(); show(VIEW); };
 }
-function show(v){ ({sched:schedView, tasks:tasksView, review:reviewView, team:teamView, ideas:ideasView, admin:adminView, me:meView})[v](); window.scrollTo(0,0); }
+function show(v){ ({sched:schedView, refs:refsView, tasks:tasksView, review:reviewView, team:teamView, ideas:ideasView, admin:adminView, me:meView})[v](); window.scrollTo(0,0); }
 
 function setupView(){
   app.innerHTML = '<div class="card center"><h2>First setup</h2><p class="muted">Create the admin account (only works from the home network, once).</p>' +
@@ -265,6 +265,28 @@ async function tasksView(){
     h += '<div class="week">Week ' + w + ' –' + (((ts[0].week_label || '').match(/\(([^)]+)\)/) || [])[1] ? ' <span style="font-size:.7em;opacity:.7">' + esc(ts[0].week_label.match(/\(([^)]+)\)/)[1]) + '</span>' : '') + pubNote + (ME.role === 'admin' ? ' <button class="btn ghost" style="font-size:13px;padding:4px 10px" data-a="add" data-w="' + w + '">➕ Add task</button>' : '') + '</div>' + ts.map(t => taskCard(t, {mine: mine || ownsTask(t), showOwner: !mine, review: !mine && ME.role !== 'viewer'})).join('');
   });
   app.innerHTML = h; bindTaskActions();
+}
+async function refsView(){
+  app.innerHTML = '<p class="muted">Loading…</p>';
+  let d; try { const r = await fetch(TOOLS + 'assets/refs.json?t=' + Date.now(), {credentials:'same-origin'}); d = await r.json(); }
+  catch(e){ app.innerHTML = '<div class="card">Could not load the references.</div>'; return; }
+  const TAG = {use:['✅ Use this','ok'], skip:['⏭️ Skip','soon'], later:['🕒 Later','soon']};
+  let h = '<h2>📎 References</h2><div class="card small">' + esc(d.intro) +
+    '<div class="ar">كل المقاطع والأفكار اللي أرسلها الفريق، وش ناخذ من كل وحدة، وكيف ننشر.</div></div>';
+  d.sections.forEach(sec => {
+    h += '<div class="week">' + esc(sec.title) + '</div>';
+    if (sec.intro) h += '<div class="card small muted">' + esc(sec.intro) + '</div>';
+    sec.items.forEach(x => {
+      const t = x.tag && TAG[x.tag];
+      h += '<div class="task"><div class="top"><div><b class="t">' + esc(x.name) + '</b>' +
+        (x.who ? '<div class="small muted">' + esc(x.who) + '</div>' : '') + '</div>' +
+        (t ? '<span class="pill ' + t[1] + '">' + t[0] + '</span>' : '') + '</div>' +
+        '<div class="small" style="margin-top:6px">' + esc(x.take) + '</div>' +
+        (x.link ? '<div class="small" style="margin-top:6px"><a class="golink" href="' + esc(x.link) + '" target="_blank" rel="noopener">open the reference ↗</a></div>' : '') +
+        '</div>';
+    });
+  });
+  app.innerHTML = h; window.scrollTo(0,0);
 }
 async function schedView(){
   app.innerHTML = '<p class="muted">Loading…</p>';
