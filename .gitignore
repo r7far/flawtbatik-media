@@ -5,3 +5,4 @@ tools/*.json
 tools/schedule.py
 tools/tasks2.py
 tools/cards/
+tools/enrich.py
